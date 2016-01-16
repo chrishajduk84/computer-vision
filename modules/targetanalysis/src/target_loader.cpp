@@ -29,16 +29,25 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "json/json.h"
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+#include <exception>
 #include <iostream>
 #include <fstream>
+#include <string>
+#include "target_loader.h"
 using namespace std;
+using namespace boost;
 
+namespace logging = boost::log;
 /*
 * JSON Structure
 * -One file per target type
 * {
-*      "parameters": {
+      "parameters": {
                      <parameter/category>: {
                               "mean":{
                                       "enabled":<True/False>    ->Use this only as an override, the target_analyzer will have jurisdiction over 
@@ -66,61 +75,63 @@ using namespace std;
 * }
 */
 
+
 /*
-class targetLoader{
-      targetLoader(string f){
-             file = f;     
-      }
-      public:
-             TargetParameters getParameters();
-             class TargetParameters{
-                   public:
-                          string* parametersTypes;
-                          Parameter* parameters;
-                          unsigned int parameterCount;
-                          class Parameter{
-                                public:
-                                       bool enabled;
-                                       double value;
-                                       unsigned int confidence;
-                          }
-             }
-      private:
-              string file;
-              readFile(string fileLocation);
-              
-}
-
-
-
-
 TargetParameters targetLoader:getParameters(){
        return 0;
 }
-
-char* targetLoader:readFile(string fileLocation){
+*/
+bool TargetLoader::readFile(string fileLocation, char* data){
      ifstream jFile;
-     char* memblock;
      
      jFile.open(fileLocation, ios::binary | ios::ate);
-     if (file.is_open())
-     {
-        size = file.tellg();
-        memblock = new char[size];
-        file.seek(0, ios::beg);
-        file.read(memblock,size);
-        file.close();
+     if (jFile.is_open()) {
+        int size;
+	size = jFile.tellg();
+        data = new char[size];
+        jFile.seekg(0, ios::beg);
+        jFile.read(data,size);
+        jFile.close();
      }
-     return memblock;                   
+     else{
+	BOOST_LOG_TRIVIAL(warning) << "Could not open file: " << fileLocation << "\n";
+	return -1;
+     }
+     return 0;                   
 }
 
-Json::Value* targetLoader:readJSON(string jsonMessage){
-     Json::Value* parsedFromString = new Json::Value();
-     Json::Reader reader;
+bool TargetLoader::readJSON(string jsonMessage, property_tree::ptree* result){
+     try{
+     	using namespace property_tree;
+     	stringstream ss;
+	ss << jsonMessage;
+     	read_json(ss, *result);
+	
+     /*Reader reader;
+     const string message = jsonMessage;
      
-     reader.parse(jsonMessage, parsedFromString);
-     if (parsingSuccessful){
-        return parsedFromString;
+     int parsingSuccessful = reader.parse(message, *result);
+     if (!parsingSuccessful){
+        */
      }
+     catch(std::exception const& e){
+	// Report to the user the failure and their locations in the document.
+	BOOST_LOG_TRIVIAL(warning) << "Failed to parse configuration\n";
+    	return -1;
+     }
+     return 0;
 }
-*/
+
+property_tree::ptree* TargetLoader::getJSON(void){
+	return jsonParameters;
+}
+
+void TargetLoader::print(property_tree::ptree const& pt)
+{
+    using boost::property_tree::ptree;
+    ptree::const_iterator end = pt.end();
+    for (ptree::const_iterator it = pt.begin(); it != end; ++it) {
+        std::cout << it->first << ": " << it->second.get_value<std::string>() << std::endl;
+        print(it->second);
+    }
+}
