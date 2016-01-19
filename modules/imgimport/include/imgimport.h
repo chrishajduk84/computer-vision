@@ -35,6 +35,7 @@
 
 #include "frame.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <DeckLinkAPI.h>
 #include <string>
 #include <vector>
 
