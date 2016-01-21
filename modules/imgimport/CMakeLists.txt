@@ -1,3 +1,2 @@
-include_directories(include ../core/include)
-target_link_libraries(ImageImport ${DeckLinkSDK_LIBS} Core)
-add_library(ImageImport src/imgimport.cpp ${DeckLinkSDK_SRC_FILE})
+include_directories(include ../core/include ${DeckLinkSDK_INCLUDE_PATH})
+add_library(ImageImport ${DeckLinkSDK_LIBS}  src/imgimport.cpp)

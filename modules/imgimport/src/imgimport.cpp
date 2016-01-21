@@ -32,6 +32,11 @@
 #include "imgimport.h"
 #include <vector>
 
+
+#ifdef HAS_DECKLINK
+#include <DeckLinkAPI.h>
+#endif
+
 ImageImport::ImageImport(std::string telemetry_path, std::string filePath, std::vector<int> videoDeviceNums) {
 
 }
