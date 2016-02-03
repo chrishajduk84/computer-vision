@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" assignedExecutableTargets="true" buildAllGenerated="true">
+    <generated>
+      <config projectName="warg-cv" targetName="target_loader_test" />
+      <config projectName="warg-cv" targetName="TargetIdentification" />
+      <config projectName="warg-cv" targetName="VolumeCalculation" />
+      <config projectName="warg-cv" targetName="warg-cv" />
+      <config projectName="warg-cv" targetName="TargetAnalysis" />
+      <config projectName="warg-cv" targetName="target_video_test" />
+      <config projectName="warg-cv" targetName="CSVCreator" />
+      <config projectName="warg-cv" targetName="ReportGenerator" />
+      <config projectName="warg-cv" targetName="ImageImport" />
+      <config projectName="warg-cv" targetName="GoogleMapsMatcher" />
+      <config projectName="warg-cv" targetName="Core" />
+      <config projectName="warg-cv" targetName="targetid_test_contour" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="false" GENERATION_PASS_SYSTEM_ENVIRONMENT="true">
+    <ADDITIONAL_GENERATION_ENVIRONMENT>
+      <envs />
+    </ADDITIONAL_GENERATION_ENVIRONMENT>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="901538a0-48ad-47a7-9849-f355d963987c" name="Default" comment="" />
+    <ignored path="computer-vision.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="computer-vision" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="intrusive_ptr.hpp" pinned="false" current-in-tab="false">
+        <entry file="file:///usr/include/boost/smart_ptr/intrusive_ptr.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="162" column="18" selection-start-line="162" selection-start-column="18" selection-end-line="162" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="stl_vector.h" pinned="false" current-in-tab="true">
+        <entry file="file:///usr/include/c++/4.8/bits/stl_vector.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.61916465">
+              <caret line="779" column="55" selection-start-line="779" selection-start-column="55" selection-end-line="779" selection-end-column="55" />
+              <folding>
+                <marker date="1431627103000" expanded="true" signature="4787:4982" placeholder="{...}" />
+                <marker date="1431627103000" expanded="true" signature="8500:8794" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="8953:9277" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="false" signature="9465:9994" placeholder="..." />
+                <marker date="1431627103000" expanded="true" signature="10708:10995" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="11217:11375" placeholder="{...}" />
+                <marker date="1431627103000" expanded="true" signature="11528:11754" placeholder="{...}" />
+                <marker date="1431627103000" expanded="true" signature="11762:12178" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="12303:12395" placeholder="{...}" />
+                <marker date="1431627103000" expanded="false" signature="13122:13214" placeholder="&lt;_InputIterator,=std::_RequireInputIter&lt;_InputIterator&gt;&gt;" />
+                <marker date="1431627103000" expanded="false" signature="13426:13805" placeholder="..." />
+                <marker date="1431627103000" expanded="true" signature="14647:14969" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="15063:15335" placeholder="{...}" />
+                <marker date="1431627103000" expanded="true" signature="15343:15775" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="15846:15909" placeholder="{...}" />
+                <marker date="1431627103000" expanded="false" signature="16999:17091" placeholder="&lt;_InputIterator,=std::_RequireInputIter&lt;_InputIterator&gt;&gt;" />
+                <marker date="1431627103000" expanded="false" signature="17244:17564" placeholder="..." />
+                <marker date="1431627103000" expanded="true" signature="17606:18046" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="20662:20840" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="20956:21139" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="21254:21438" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="21554:21750" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="22313:22740" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="22793:22959" placeholder="{...}" />
+                <marker date="1431627103000" expanded="true" signature="22967:23506" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="23582:23749" placeholder="{...}" />
+                <marker date="1431627103000" expanded="false" signature="23762:24552" placeholder="..." />
+                <marker date="1431627103000" expanded="false" signature="29820:29827" placeholder="..." />
+                <marker date="1431627103000" expanded="false" signature="29967:29980" placeholder="..." />
+                <marker date="1431627103000" expanded="false" signature="30869:30895" placeholder="..." />
+                <marker date="1431627103000" expanded="false" signature="31031:31058" placeholder="&lt;..._Args&gt;" />
+                <marker date="1431627103000" expanded="true" signature="31601:32171" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="false" signature="32178:32205" placeholder="&lt;..._Args&gt;" />
+                <marker date="1431627103000" expanded="true" signature="32932:33464" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="true" signature="33593:34127" placeholder="/**...*/" />
+                <marker date="1431627103000" expanded="false" signature="35595:35687" placeholder="&lt;_InputIterator,=std::_RequireInputIter&lt;_InputIterator&gt;&gt;" />
+                <marker date="1431627103000" expanded="false" signature="35881:36242" placeholder="..." />
+                <marker date="1431627103000" expanded="false" signature="41050:41070" placeholder="..." />
+                <marker date="1431627103000" expanded="true" signature="42131:42294" placeholder="{...}" />
+                <marker date="1431627103000" expanded="false" signature="45365:45434" placeholder="..." />
+                <marker date="1431627103000" expanded="false" signature="45447:45474" placeholder="&lt;..._Args&gt;" />
+                <marker date="1431627103000" expanded="false" signature="45558:45585" placeholder="&lt;..._Args&gt;" />
+                <marker date="1431627103000" expanded="true" signature="46580:46843" placeholder="{...}" />
+                <marker date="1431627103000" expanded="true" signature="47051:47454" placeholder="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$USER_HOME$/Documents/computer-vision" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$USER_HOME$/Documents/computer-vision/modules/imgimport/test/main.cpp" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
+  <component name="JsBuildToolPackageJson" detection-done="true" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="266" />
+    <option name="y" value="52" />
+    <option name="width" value="1571" />
+    <option name="height" value="1000" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="computer-vision" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="computer-vision" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="RunManager" selected="Application.ImageImport">
+    <configuration default="true" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="warg-cv" CONFIG_NAME="Debug" TEST_MODE="SUITE_TEST">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="warg-cv" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="warg-cv" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="warg-cv" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="warg-cv" RUN_TARGET_NAME="warg-cv">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="Core" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="Core" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="CSVCreator" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="CSVCreator" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="GoogleMapsMatcher" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="GoogleMapsMatcher" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="ImageImport" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="ImageImport" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="warg-cv" RUN_TARGET_NAME="target_video_test">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="target_video_test" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="target_video_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="warg-cv" RUN_TARGET_NAME="target_video_test">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="ReportGenerator" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="ReportGenerator" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="TargetAnalysis" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="TargetAnalysis" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="target_loader_test" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="target_loader_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="warg-cv" RUN_TARGET_NAME="target_loader_test">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="TargetIdentification" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="TargetIdentification" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="targetid_test_contour" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="targetid_test_contour" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="warg-cv" RUN_TARGET_NAME="targetid_test_contour">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="VolumeCalculation" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="warg-cv" TARGET_NAME="VolumeCalculation" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <list size="13">
+      <item index="0" class="java.lang.String" itemvalue="Application.Build All" />
+      <item index="1" class="java.lang.String" itemvalue="Application.warg-cv" />
+      <item index="2" class="java.lang.String" itemvalue="Application.Core" />
+      <item index="3" class="java.lang.String" itemvalue="Application.CSVCreator" />
+      <item index="4" class="java.lang.String" itemvalue="Application.GoogleMapsMatcher" />
+      <item index="5" class="java.lang.String" itemvalue="Application.ImageImport" />
+      <item index="6" class="java.lang.String" itemvalue="Application.target_video_test" />
+      <item index="7" class="java.lang.String" itemvalue="Application.ReportGenerator" />
+      <item index="8" class="java.lang.String" itemvalue="Application.TargetAnalysis" />
+      <item index="9" class="java.lang.String" itemvalue="Application.target_loader_test" />
+      <item index="10" class="java.lang.String" itemvalue="Application.TargetIdentification" />
+      <item index="11" class="java.lang.String" itemvalue="Application.targetid_test_contour" />
+      <item index="12" class="java.lang.String" itemvalue="Application.VolumeCalculation" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="901538a0-48ad-47a7-9849-f355d963987c" name="Default" comment="" />
+      <created>1454462643823</created>
+      <option name="number" value="Default" />
+      <updated>1454462643823</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="266" y="52" width="1571" height="1000" extended-state="1" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22278804" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34989202" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5280778" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$USER_HOME$/Documents/computer-vision/modules/imgimport/test/main.cpp</url>
+          <line>87</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$USER_HOME$/Documents/computer-vision/modules/imgimport/src/DeckLinkOpenCv.cpp</url>
+          <line>96</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$USER_HOME$/Documents/computer-vision/modules/imgimport/src/DeckLinkOpenCv.cpp</url>
+          <line>111</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$USER_HOME$/Documents/computer-vision/modules/imgimport/src/DeckLinkCapture.cpp</url>
+          <line>170</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$USER_HOME$/Documents/computer-vision/modules/imgimport/src/DeckLinkOpenCv.cpp</url>
+          <line>105</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="13" />
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="out" />
+        <watch expression="in" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file:///usr/include/boost/smart_ptr/detail/operator_bool.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.1111112">
+          <caret line="62" column="0" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/opencv2/core/mat.inl.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.58866996">
+          <caret line="320" column="0" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/boost/smart_ptr/intrusive_ptr.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="162" column="18" selection-start-line="162" selection-start-column="18" selection-end-line="162" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/4.8/bits/stl_vector.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.61916465">
+          <caret line="779" column="55" selection-start-line="779" selection-start-column="55" selection-end-line="779" selection-end-column="55" />
+          <folding>
+            <marker date="1431627103000" expanded="true" signature="4787:4982" placeholder="{...}" />
+            <marker date="1431627103000" expanded="true" signature="8500:8794" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="8953:9277" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="false" signature="9465:9994" placeholder="..." />
+            <marker date="1431627103000" expanded="true" signature="10708:10995" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="11217:11375" placeholder="{...}" />
+            <marker date="1431627103000" expanded="true" signature="11528:11754" placeholder="{...}" />
+            <marker date="1431627103000" expanded="true" signature="11762:12178" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="12303:12395" placeholder="{...}" />
+            <marker date="1431627103000" expanded="false" signature="13122:13214" placeholder="&lt;_InputIterator,=std::_RequireInputIter&lt;_InputIterator&gt;&gt;" />
+            <marker date="1431627103000" expanded="false" signature="13426:13805" placeholder="..." />
+            <marker date="1431627103000" expanded="true" signature="14647:14969" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="15063:15335" placeholder="{...}" />
+            <marker date="1431627103000" expanded="true" signature="15343:15775" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="15846:15909" placeholder="{...}" />
+            <marker date="1431627103000" expanded="false" signature="16999:17091" placeholder="&lt;_InputIterator,=std::_RequireInputIter&lt;_InputIterator&gt;&gt;" />
+            <marker date="1431627103000" expanded="false" signature="17244:17564" placeholder="..." />
+            <marker date="1431627103000" expanded="true" signature="17606:18046" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="20662:20840" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="20956:21139" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="21254:21438" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="21554:21750" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="22313:22740" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="22793:22959" placeholder="{...}" />
+            <marker date="1431627103000" expanded="true" signature="22967:23506" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="23582:23749" placeholder="{...}" />
+            <marker date="1431627103000" expanded="false" signature="23762:24552" placeholder="..." />
+            <marker date="1431627103000" expanded="false" signature="29820:29827" placeholder="..." />
+            <marker date="1431627103000" expanded="false" signature="29967:29980" placeholder="..." />
+            <marker date="1431627103000" expanded="false" signature="30869:30895" placeholder="..." />
+            <marker date="1431627103000" expanded="false" signature="31031:31058" placeholder="&lt;..._Args&gt;" />
+            <marker date="1431627103000" expanded="true" signature="31601:32171" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="false" signature="32178:32205" placeholder="&lt;..._Args&gt;" />
+            <marker date="1431627103000" expanded="true" signature="32932:33464" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="true" signature="33593:34127" placeholder="/**...*/" />
+            <marker date="1431627103000" expanded="false" signature="35595:35687" placeholder="&lt;_InputIterator,=std::_RequireInputIter&lt;_InputIterator&gt;&gt;" />
+            <marker date="1431627103000" expanded="false" signature="35881:36242" placeholder="..." />
+            <marker date="1431627103000" expanded="false" signature="41050:41070" placeholder="..." />
+            <marker date="1431627103000" expanded="true" signature="42131:42294" placeholder="{...}" />
+            <marker date="1431627103000" expanded="false" signature="45365:45434" placeholder="..." />
+            <marker date="1431627103000" expanded="false" signature="45447:45474" placeholder="&lt;..._Args&gt;" />
+            <marker date="1431627103000" expanded="false" signature="45558:45585" placeholder="&lt;..._Args&gt;" />
+            <marker date="1431627103000" expanded="true" signature="46580:46843" placeholder="{...}" />
+            <marker date="1431627103000" expanded="true" signature="47051:47454" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

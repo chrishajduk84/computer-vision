@@ -3,7 +3,7 @@
 
     Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
     All rights reserved.
-
+ 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
     1. Redistributions of source code must retain the above copyright
@@ -29,46 +29,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "imgimport.h"
-#include <vector>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include "test.h"
+#include "target_loader.h"
 
+using namespace std;
+using namespace boost;
 
-#ifdef HAS_DECKLINK
-#include <DeckLinkAPI.h>
-#endif
+namespace logging = boost::log;
+/*
+class LoadFileTest : public BoolTest<string &> {
+    public:
+        LoadFileTest(string s): BoolTest(s) { }
 
-ImageImport::ImageImport(std::string telemetry_path, std::string filePath, std::vector<int> videoDeviceNums)
-{
-	//Have this call a function
+    protected:
+        bool test(string & arg) {
+            TargetLoader loader(arg);
+	    //loader.print(*loader.jsonParameters);
+	    //property_tree::ptree* root = loader.getJSON();
+	    return false;
+        }
+};
+*/
+int main(int argc, char ** argv) {
+    logging::core::get()->set_filter
+    (
+       logging::trivial::severity >= logging::trivial::info
+    );
+    if(argc <= 1) {
+        BOOST_LOG_TRIVIAL(info) << "Invalid arguments for test";
+        return 1;
+    }
+    string file = argv[0];
+    string description = argv[1];    
 
+    TargetLoader loader(file);
+    /*LoadFileTest test("Simple JSON File Load Process Using BOOST");
+    double result = test.do_test(file, description, false);
+    cout << result;*/
+    return 0;//!(result == 10); // arbitrary bounds for success of test
 }
-
-ImageImport::~ImageImport()
-{
-	//Pseudocode
-	//
-
-}
-
-
-//Decklink --- extract video frames from the 
-
-Frame * ImageImport::next_frame()
-{
-    return NULL;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
