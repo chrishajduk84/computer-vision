@@ -1,2 +1,3 @@
 # Put files to ignore here
 build
+*~

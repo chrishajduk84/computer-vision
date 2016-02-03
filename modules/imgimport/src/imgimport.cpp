@@ -23,6 +23,14 @@ ImageImport::ImageImport() {
 
 }
 
+//Decklink --- extract video frames from the 
+
+Frame * ImageImport::next_frame()
+{
+    return NULL;
+}
+
+
 
 
 
