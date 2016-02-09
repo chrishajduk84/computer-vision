@@ -52,8 +52,7 @@ int main()
 
     IDeckLink* deckLink;
     while (deckLinkIterator->Next(&deckLink) == S_OK) {
-        captures.push_back(
-            std::move(DeckLinkCapture(ComPtr<IDeckLink>(deckLink))));
+        captures.push_back(std::move(DeckLinkCapture(ComPtr<IDeckLink>(deckLink))));
 
         std::string windowName = boost::str(boost::format("%s <%i>") %
             captures.back().getDeviceDisplayName() % captures.size());

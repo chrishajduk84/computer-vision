@@ -27,117 +27,114 @@
 #include "ComPtr.h"
 #include "DeckLinkOpenCv.h"
 
-class CvMatDeckLinkVideoFrame : public IDeckLinkVideoFrame
-{
-    public:
-        cv::Mat mat;
+class CvMatDeckLinkVideoFrame : public IDeckLinkVideoFrame {
+public:
+    cv::Mat mat;
 
-        CvMatDeckLinkVideoFrame(int row, int cols)
-            : mat(row, cols, CV_8UC4)
-        {}
+    CvMatDeckLinkVideoFrame(int row, int cols)
+            : mat(row, cols, CV_8UC4) { }
 
-        //
-        // IDeckLinkVideoFrame
-        //
+    //
+    // IDeckLinkVideoFrame
+    //
 
-        long GetWidth()
-        { return mat.rows; }
-        long GetHeight()
-        { return mat.cols; }
-        long GetRowBytes()
-        { return mat.step; }
-        BMDPixelFormat GetPixelFormat()
-        { return bmdFormat8BitBGRA; }
-        BMDFrameFlags GetFlags()
-        { return 0; }
-        HRESULT GetBytes(void **buffer)
-        {
-            *buffer = mat.data;
-            return S_OK;
-        }
+    long GetWidth() { return mat.rows; }
 
-        HRESULT GetTimecode(BMDTimecodeFormat format,
-            IDeckLinkTimecode **timecode)
-        { *timecode = nullptr; return S_OK; }
-        HRESULT GetAncillaryData(IDeckLinkVideoFrameAncillary **ancillary)
-        { *ancillary = nullptr; return S_OK; }
+    long GetHeight() { return mat.cols; }
 
-        //
-        // IDeckLinkVideoFrame
-        //
+    long GetRowBytes() { return mat.step; }
 
-        HRESULT QueryInterface(REFIID iid, LPVOID *ppv)
-        { return E_NOINTERFACE; }
+    BMDPixelFormat GetPixelFormat() { return bmdFormat8BitBGRA; }
 
-        ULONG AddRef()
-        { 
-		mat.addref(); 
-		//return *mat.refcount; 
-		return mat.u->refcount;
-	}
-        ULONG Release()
-        {
-            mat.release();
-            //if (*mat.refcount == 0) delete this;
-            //return *mat.refcount;
-	      if (mat.u->refcount == 0) delete this;
-		return mat.u->refcount;
-        }
+    BMDFrameFlags GetFlags() { return 0; }
+
+    HRESULT GetBytes(void **buffer) {
+        *buffer = mat.data;
+        return S_OK;
+    }
+
+    HRESULT GetTimecode(BMDTimecodeFormat format,
+                        IDeckLinkTimecode **timecode) {
+        *timecode = nullptr;
+        return S_OK;
+    }
+
+    HRESULT GetAncillaryData(IDeckLinkVideoFrameAncillary **ancillary) {
+        *ancillary = nullptr;
+        return S_OK;
+    }
+
+    //
+    // IDeckLinkVideoFrame
+    //
+
+    HRESULT QueryInterface(REFIID iid, LPVOID *ppv) { return E_NOINTERFACE; }
+
+    ULONG AddRef() {
+        mat.addref();
+        //return *mat.refcount;
+        return mat.u->refcount;
+    }
+
+    ULONG Release() {
+        mat.release();
+        //if (*mat.refcount == 0) delete this;
+        //return *mat.refcount;
+        if (mat.u->refcount == 0) delete this;
+        return mat.u->refcount;
+    }
 };
 
 bool deckLinkVideoFrameToCvMat(ComPtr<IDeckLinkVideoInputFrame> in,
-    cv::Mat& out)
-{
-	std::cerr << "Printing out IN"
-	          << std::endl
-		  << in
-		  << std::endl;
-		  
+                               cv::Mat &out) {
+    std::cerr << "Printing out IN"
+    << std::endl
+    << in
+    << std::endl;
+
 
     switch (in->GetPixelFormat()) {
-    case bmdFormat8BitYUV:
-    {
-        void* data;
-        if (FAILED(in->GetBytes(&data)))
-            return false;
+        case bmdFormat8BitYUV: {
+            void *data;
 
-        cv::Mat mat = cv::Mat(in->GetHeight(), in->GetWidth(), CV_8UC2, data,
-            in->GetRowBytes());
-	//imshow("MATRIX PRINTING OUT",mat);
-        cv::cvtColor(mat, out, CV_YUV2BGR_UYVY);
+            bool stat = FAILED(in->GetBytes(&data));
 
-	cv::polylines(mat,data,true, cv::Scalar(255));
-	cv::imshow("IMAGE",mat);
-	//cv::cvtColor(mat, out, CV_YUV2BGR_YUY2);
+            if (FAILED(in->GetBytes(&data)))
+                return false;
 
-	std::cerr << "Prining out CHANNELS"
-	          << std::endl
-		  << mat.channels()
-		  << std::endl;	
-		  
-        return true;
+            cv::Mat mat = cv::Mat(in->GetHeight(), in->GetWidth(), CV_8UC2, data,
+                                  in->GetRowBytes());
+
+            cv::cvtColor(mat, out, CV_YUV2BGR_UYVY);
+            
+
+            std::cerr << "Prining out CHANNELS"
+            << std::endl
+            << mat.channels()
+            << std::endl;
+
+            return true;
+        }
+        case bmdFormat8BitBGRA: {
+            void *data;
+            if (FAILED(in->GetBytes(&data)))
+                return false;
+
+            cv::Mat mat = cv::Mat(in->GetHeight(), in->GetWidth(), CV_8UC4, data);
+            cv::cvtColor(mat, out, CV_BGRA2BGR);
+            return true;
+        }
+        default: {
+            ComPtr<IDeckLinkVideoConversion> deckLinkVideoConversion =
+                    CreateVideoConversionInstance();
+            if (!deckLinkVideoConversion)
+                return false;
+
+            CvMatDeckLinkVideoFrame cvMatWrapper(in->GetHeight(), in->GetWidth());
+            if (FAILED(deckLinkVideoConversion->ConvertFrame(in.get(), &cvMatWrapper)))
+                return false;
+            cv::cvtColor(cvMatWrapper.mat, out, CV_BGRA2BGR);
+            return true;
+        }
     }
-    case bmdFormat8BitBGRA:
-    {
-        void* data;
-        if (FAILED(in->GetBytes(&data)))
-            return false;
-
-        cv::Mat mat = cv::Mat(in->GetHeight(), in->GetWidth(), CV_8UC4, data);
-        cv::cvtColor(mat, out, CV_BGRA2BGR);
-        return true;
-    }
-    default:
-    {
-        ComPtr<IDeckLinkVideoConversion> deckLinkVideoConversion =
-            CreateVideoConversionInstance();
-        if (! deckLinkVideoConversion)
-            return false;
-
-        CvMatDeckLinkVideoFrame cvMatWrapper(in->GetHeight(), in->GetWidth());
-        if (FAILED(deckLinkVideoConversion->ConvertFrame(in.get(), &cvMatWrapper)))
-            return false;
-        cv::cvtColor(cvMatWrapper.mat, out, CV_BGRA2BGR);
-        return true;
-    }}
 }
