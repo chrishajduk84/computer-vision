@@ -33,12 +33,11 @@ DeckLinkCapture::DeckLinkCapture(ComPtr<IDeckLink> deckLink)
       error_(S_OK)
 {
     IDeckLinkInput* deckLinkInput;
-    error_ = deckLink_->QueryInterface(IID_IDeckLinkInput,
-        reinterpret_cast<void**>(&deckLinkInput));
+    error_ = deckLink_->QueryInterface(IID_IDeckLinkInput, reinterpret_cast<void**>(&deckLinkInput));
     if (SUCCEEDED(error_))
         deckLinkInput_ = ComPtr<IDeckLinkInput>(deckLinkInput);
     else {
-        errorString_ = "La interfaz IDeckLinkInput no pudo ser encontrada";
+        errorString_ = "Unable to read the file";
         return;
     }
 }
