@@ -63,7 +63,7 @@ int main(int argc, char ** argv) {
         BOOST_LOG_TRIVIAL(info) << "Invalid arguments for test";
         return 1;
     }
-    string file = argv[0];
+    const char* file = argv[0];
     string description = argv[1];    
 
     TargetLoader loader(file);

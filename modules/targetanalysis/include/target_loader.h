@@ -44,36 +44,36 @@
 #include <boost/property_tree/ptree.hpp>
 
 class TargetLoader{
-     public:
-        TargetLoader(std::string file){
-                char* arr;
-                boost::property_tree::ptree* jsonRoot;
-		if (readFile(file,arr)){
-                        std::string data = std::string(arr);
-                        readJSON(data,jsonRoot);
-                }
-                jsonParameters = jsonRoot;
-        }
+   public:
+      TargetLoader(const char* file){
+         char* arr;
+         boost::property_tree::ptree* jsonRoot;
+	 if (readFile(file,arr)){
+            std::string data = std::string(arr);
+            readJSON(data,jsonRoot);
+         }
+         jsonParameters = jsonRoot;
+      }
 	
-	boost::property_tree::ptree* jsonParameters;	
-        boost::property_tree::ptree* getJSON(void);
-  	void print(boost::property_tree::ptree const& pt);	
-	/*TargetParameters getParameters();
-             class TargetParameters{
-                   public:
-                          string* parametersTypes;
-                          Parameter* parameters;
-                          unsigned int parameterCount;
-                          class Parameter{
-                                public:
-                                       bool enabled;
-                                       double value;
-                                       unsigned int confidence;
-                          }
-             }*/
+      boost::property_tree::ptree* jsonParameters;	
+      boost::property_tree::ptree* getJSON(void);
+      void print(boost::property_tree::ptree const& pt);	
+      /*TargetParameters getParameters();
+           class TargetParameters{
+              public:
+                 string* parametersTypes;
+                 Parameter* parameters;
+                 unsigned int parameterCount;
+                 class Parameter{
+                    public:
+                       bool enabled;
+                       double value;
+                       unsigned int confidence;
+                 }
+           }*/
       private:
-              bool readFile(std::string fileLocation, char* data);
-              bool readJSON(std::string data, boost::property_tree::ptree* result);    
+         bool readFile(const char* fileLocation, char* data);
+         bool readJSON(std::string data, boost::property_tree::ptree* result);    
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED
