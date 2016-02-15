@@ -45,19 +45,10 @@
 
 class TargetLoader{
    public:
-      TargetLoader(const char* file){
-         char* arr;
-         boost::property_tree::ptree* jsonRoot;
-	 if (readFile(file,arr)){
-            std::string data = std::string(arr);
-            readJSON(data,jsonRoot);
-         }
-         jsonParameters = jsonRoot;
-      }
-	
-      boost::property_tree::ptree* jsonParameters;	
+      TargetLoader(const char* file);
+      boost::property_tree::ptree jsonParameters;	
       boost::property_tree::ptree* getJSON(void);
-      void print(boost::property_tree::ptree const& pt);	
+      void print();	
       /*TargetParameters getParameters();
            class TargetParameters{
               public:
@@ -72,8 +63,10 @@ class TargetLoader{
                  }
            }*/
       private:
-         bool readFile(const char* fileLocation, char* data);
-         bool readJSON(std::string data, boost::property_tree::ptree* result);    
+         char* rawData;
+         bool readFile(const char* fileLocation);
+         bool readJSON(std::string data, boost::property_tree::ptree* result);
+         void recursivePrint(boost::property_tree::ptree const& pt);    
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED
