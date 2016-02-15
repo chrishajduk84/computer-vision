@@ -63,10 +63,11 @@ int main(int argc, char ** argv) {
         BOOST_LOG_TRIVIAL(info) << "Invalid arguments for test";
         return 1;
     }
-    const char* file = argv[0];
-    string description = argv[1];    
-
+    const char* file = argv[1];
+    string description = argv[2];    
     TargetLoader loader(file);
+    property_tree::ptree* pt = loader.getJSON(); 
+    loader.print();
     /*LoadFileTest test("Simple JSON File Load Process Using BOOST");
     double result = test.do_test(file, description, false);
     cout << result;*/

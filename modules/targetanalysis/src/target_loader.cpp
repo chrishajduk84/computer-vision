@@ -80,38 +80,38 @@ TargetParameters targetLoader:getParameters(){
        return 0;
 }
 */
-bool TargetLoader::readFile(const char* fileLocation, char* data){
-   ifstream jFile;
+TargetLoader::TargetLoader(const char* file){
+   if (readFile(file)){
+      std::string data = std::string(rawData);
+      readJSON(data,&jsonParameters);
+   }
+}
+
+bool TargetLoader::readFile(const char* fileLocation){
+   ifstream jFile(fileLocation, ifstream::in | ios::ate);
   
-   jFile.open(fileLocation, ios::binary | ios::ate);
    if (jFile.is_open()) {
       int size;
       size = jFile.tellg();
-      data = new char[size];
+      rawData = new char[size];
       jFile.seekg(0, ios::beg);
-      jFile.read(data,size);
+      jFile.read(rawData,size);     
       jFile.close();
+      BOOST_LOG_TRIVIAL(info) << "File opened: " << fileLocation;
+      BOOST_LOG_TRIVIAL(info) << "Size: " << size;
    }
    else{
       BOOST_LOG_TRIVIAL(warning) << "Could not open file: " << fileLocation << "\n";
-      return -1;
+      return 0;
    }
-   return 0;                   
+   return 1;                   
 }
 
 bool TargetLoader::readJSON(string jsonMessage, property_tree::ptree* result){
    try{
-      using namespace property_tree;
-      stringstream ss;
-      ss << jsonMessage;
+      using property_tree::read_json;
+      stringstream ss(jsonMessage);
       read_json(ss, *result);
-	
-     /*Reader reader;
-     const string message = jsonMessage;
-     
-     int parsingSuccessful = reader.parse(message, *result);
-     if (!parsingSuccessful){
-        */
    }
    catch(std::exception const& e){
       // Report to the user the failure and their locations in the document.
@@ -122,15 +122,24 @@ bool TargetLoader::readJSON(string jsonMessage, property_tree::ptree* result){
 }
 
 property_tree::ptree* TargetLoader::getJSON(void){
-   return jsonParameters;
+   return &jsonParameters;
 }
 
-void TargetLoader::print(property_tree::ptree const& pt)
+void TargetLoader::print()
 {
+   using boost::property_tree::ptree;
+   ptree::const_iterator end = jsonParameters.end();
+   for (ptree::const_iterator it = jsonParameters.begin(); it != end; ++it) {
+      std::cout << it->first << ": " << it->second.get_value<std::string>() << std::endl;
+      recursivePrint(it->second);
+   }
+}
+
+void TargetLoader::recursivePrint(property_tree::ptree const& pt){
    using boost::property_tree::ptree;
    ptree::const_iterator end = pt.end();
    for (ptree::const_iterator it = pt.begin(); it != end; ++it) {
       std::cout << it->first << ": " << it->second.get_value<std::string>() << std::endl;
-      print(it->second);
+      recursivePrint(it->second);
    }
 }

@@ -1,27 +1,27 @@
 {
-     "parameters": {
-                     <parameter/category>: {
-                              "mean":{
-                                      "enabled":<True/False>    ->Use this only as an override, the target_analyzer will have jurisdiction over 
-                                      "value":<value>           ->Treated as a double. Don't put strings here (also remember to right the error checking code for this).
-                                      "confidence":<value>      -> Integer value ranging from 0 to 100
-                              }
-                              "mode":{
-                                      "enabled":<True/False>    ->Use this only as an override, the target_analyzer will have jurisdiction over 
-                                      "value":<value>
-                                      "confidence":<value>      -> Integer value ranging from 0 to 100
-                              }
-                              "std":{
-                                      "enabled":<True/False>
-                                      "value":<value>
-                                      "confidence":<value>      -> Integer value ranging from 0 to 100
-                              }
-                              "distribution":{                  ->Examples like gaussian/binomial/etc
-                                      "enabled":<True/False>
-                                      "value":<value>           
-                                      "confidence":<value>      -> Integer value ranging from 0 to 100
-                              }
-                           }
-                     
-       } 
- }
+	"parameters": {
+		"yes": {
+			"mean": {
+				"enabled": "true",
+				"value": 1,
+				"confidence": 1
+			},
+			"mode": {
+				"enabled": "true",
+				"value": 1,
+				"confidence": 2
+			},
+			"std": {
+				"enabled": "true",
+				"value": 1,
+				"confidence": 3
+			},
+			"distribution": {
+				"enabled": "true",
+				"value": 1,
+				"confidence": 4
+			}
+		}
+
+	}
+}
