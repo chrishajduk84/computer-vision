@@ -41,9 +41,10 @@ int main()
 {
     ComPtr<IDeckLinkIterator> deckLinkIterator = CreateDeckLinkIteratorInstance();
     if (! deckLinkIterator) {
-        std::cerr << program_invocation_short_name
-                  << ": No se puede obtener el iterador de dispositivos DeckLink."
-                  << std::endl;
+//        std::cerr << program_invocation_short_name
+//                  << ": No se puede obtener el iterador de dispositivos DeckLink."
+//                  << std::endl;
+        fprintf(stderr,"This application requires a DeckLink driver. \n");
         return 1;
     }
 
@@ -51,18 +52,21 @@ int main()
     std::vector<std::string> windows;
 
     IDeckLink* deckLink;
+
     while (deckLinkIterator->Next(&deckLink) == S_OK) {
         captures.push_back(std::move(DeckLinkCapture(ComPtr<IDeckLink>(deckLink))));
 
         std::string windowName = boost::str(boost::format("%s <%i>") %
             captures.back().getDeviceDisplayName() % captures.size());
+
         cv::namedWindow(windowName);
+
         windows.push_back(windowName);
     }
 
     if (captures.size() == 0) {
         std::cerr << program_invocation_short_name
-                  << ": No se encontró ningún dispositivo DeckLink."
+                  << ": No DeckLink device was found"
                   << std::endl;
         return 2;
     }
@@ -86,6 +90,7 @@ int main()
         for(unsigned i = 0; i < captures.size(); ++i) {
             cv::Mat frame;
             captures[i].retrieve(frame);
+            //Start Processing here
             cv::imshow(windows[i], frame);
         }
         if (cv::waitKey(10) >= 0)
