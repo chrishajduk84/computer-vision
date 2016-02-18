@@ -1,5 +1,5 @@
 /*
- * main.cpp - Programa de ejemplo de uso de la clase DeckLinkCapture
+ * main.cpp - Implementation of the DeckLinkCapture class
  *
  *   Copyright 2013 Jesús Torres <jmtorres@ull.es>
  *
@@ -36,15 +36,15 @@
 #include <boost/log/expressions.hpp>
 #include <boost/property_tree/ptree.hpp>
 
+using namespace boost;
+
+namespace logging = boost::log;
 
 int main()
 {
     ComPtr<IDeckLinkIterator> deckLinkIterator = CreateDeckLinkIteratorInstance();
     if (! deckLinkIterator) {
-//        std::cerr << program_invocation_short_name
-//                  << ": No se puede obtener el iterador de dispositivos DeckLink."
-//                  << std::endl;
-        fprintf(stderr,"This application requires a DeckLink driver. \n");
+        BOOST_LOG_TRIVIAL(error) << "This application requires a DeckLink driver. \n";
         return 1;
     }
 
@@ -65,21 +65,21 @@ int main()
     }
 
     if (captures.size() == 0) {
-        std::cerr << program_invocation_short_name
-                  << ": No DeckLink device was found"
-                  << std::endl;
+        BOOST_LOG_TRIVIAL(error) << program_invocation_short_name
+                  		 << ": No DeckLink device was found"
+                  		 << std::endl;
         return 2;
     }
 
     BOOST_FOREACH(DeckLinkCapture& capture, captures)
     {
         if (! capture.start())
-            std::cerr << program_invocation_short_name
-                      << ": No se pudo iniciar la captura en el dispositivo '"
-                      << capture.getDeviceDisplayName()
-                      << "': "
-                      << capture.errorString()
-                      << std::endl;
+            BOOST_LOG_TRIVIAL(error) << program_invocation_short_name
+                      		     << ": Could not start the capture on the device.'"
+                      		     << capture.getDeviceDisplayName()
+                      		     << "': "
+                      		     << capture.errorString()
+                      		     << std::endl;
     }
 
     while (true) {

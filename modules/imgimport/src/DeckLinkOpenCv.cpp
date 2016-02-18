@@ -24,8 +24,16 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+
+
 #include "ComPtr.h"
 #include "DeckLinkOpenCv.h"
+
+using namespace boost;
+
+namespace logging = boost::log;
 
 class CvMatDeckLinkVideoFrame : public IDeckLinkVideoFrame {
 public:
@@ -87,10 +95,8 @@ public:
 
 bool deckLinkVideoFrameToCvMat(ComPtr<IDeckLinkVideoInputFrame> in,
                                cv::Mat &out) {
-    std::cerr << "Printing out IN"
-    << std::endl
-    << in
-    << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "Printing out IN" << std::endl
+			    << in << std::endl;
 
 
     switch (in->GetPixelFormat()) {
@@ -108,10 +114,8 @@ bool deckLinkVideoFrameToCvMat(ComPtr<IDeckLinkVideoInputFrame> in,
             cv::cvtColor(mat, out, CV_YUV2BGR_UYVY);
             
 
-            std::cerr << "Prining out CHANNELS"
-            << std::endl
-            << mat.channels()
-            << std::endl;
+            BOOST_LOG_TRIVIAL(info) << "Prining out CHANNELS" << std::endl
+            			    << mat.channels() << std::endl;
 
             return true;
         }
