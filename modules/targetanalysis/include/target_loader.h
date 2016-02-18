@@ -35,6 +35,8 @@
 /**
  * @file target_loader.h
  *
+ * @class TargetLoader
+ * 
  * @brief Module for loading JSON files for quick and dynamic tuning of 
  *        filtering parameters for detection of unique targets
  *
@@ -44,29 +46,44 @@
 #include <boost/property_tree/ptree.hpp>
 
 class TargetLoader{
-   public:
-      TargetLoader(const char* file);
-      boost::property_tree::ptree jsonParameters;	
-      boost::property_tree::ptree* getJSON(void);
-      void print();	
-      /*TargetParameters getParameters();
-           class TargetParameters{
-              public:
-                 string* parametersTypes;
-                 Parameter* parameters;
-                 unsigned int parameterCount;
-                 class Parameter{
-                    public:
-                       bool enabled;
-                       double value;
-                       unsigned int confidence;
-                 }
-           }*/
-      private:
-         char* rawData;
-         bool readFile(const char* fileLocation);
-         bool readJSON(std::string data, boost::property_tree::ptree* result);
-         void recursivePrint(boost::property_tree::ptree const& pt);    
+    public:
+
+        /**
+         * @brief Creates a TargetLoader object. Automatically opens up a given file and parses it. 
+         */
+	TargetLoader(const char* file);
+       
+        /**
+         * @brief Creates a TargetLoader object. Automatically opens up a given file and parses it. 
+	 * @return Returns a BOOST Property Tree Object with the data associated with the JSON file that was parsed and read.
+         */
+	boost::property_tree::ptree* getJSON(void);
+        /**
+         * @brief Prints a loaded JSON file to the BOOST info log. 
+         */
+	void print();	
+    private:
+        /**
+         * @brief Function used to read character data into a buffer for parsing.
+         * @param fileLocation The location of the .json file. Absolute path. 
+	 * @return True/False value depicting whether or not the read operation was successful.
+         */
+        bool readFile(const char* fileLocation);
+        /**
+         * @brief From string data containing a JSON object, this function parses the JSON into the BOOST property tree format. 
+	 * @param data A string containing a JSON object.
+	 * @param result Pointer to a BOOST property tree, where the resulting JSON data will be stored.
+         * @return True/False value depicting whether or not the parsing operation was successful.
+         */
+        bool readJSON(std::string data, boost::property_tree::ptree* result);
+        /**
+         * @brief Prints out a BOOST property tree to the BOOST info log. 
+	 * @param pt A property tree or a sub-tree which is used to be printed out.
+         */
+        void recursivePrint(boost::property_tree::ptree const& pt);
+
+       	boost::property_tree::ptree jsonParameters;
+        char* rawData;	    
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED

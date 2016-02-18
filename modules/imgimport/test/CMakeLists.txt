@@ -1,7 +1,6 @@
 enable_testing()
 
-if(Boost_FOUND AND OpenCV_FOUND)
-    message(status "PRINTING THIS - DECKLINK ${DeckLinkSDK_INCLUDE_PATH}")
+if(Boost_FOUND AND OpenCV_FOUND) 
     include_directories(../include ../../core/include)
     ADD_DEFINITIONS("-DBOOST_LOG_DYN_LINK")
     add_executable(target_video_test main.cpp ${DeckLinkSDK_INCLUDE_PATH}/DeckLinkAPIDispatch.cpp)

@@ -93,7 +93,7 @@ bool DeckLinkCapture::doesSupportVideoMode(BMDDisplayMode displayMode,
         return support == bmdDisplayModeSupported ||
             support == bmdDisplayModeSupportedWithConversion;
     else {
-        errorString_ = "Error en la consulta a IDeckLinkInput::DoesSupportVideoMode()";
+        errorString_ = "Error selecting the appropriate displaymode via IDeckLinkInput::DoesSupportVideoMode()";
         return false;
     }
 }
@@ -105,17 +105,16 @@ bool DeckLinkCapture::start(BMDDisplayMode displayMode,
     if (FAILED(error_)) {
         switch (error_) {
         case E_INVALIDARG:
-            errorString_ = "El modo de vídeo es inválido";
+            errorString_ = "Invalid video mode.";
             break;
         case E_ACCESSDENIED:
-            errorString_ = "Imposible acceder al hardware o el flujo de "
-                "captura está activo.";
+            errorString_ = "Unable to access hardware or flow capture is active.";
             break;
         case E_OUTOFMEMORY:
-            errorString_ = "Imposible crear un nuevo frame";
+            errorString_ = "Cannot create a new frame (out of memory).";
             break;
         default:
-            errorString_ = "Error al invocar a IDeckLinkInput::EnableVideoInput()";
+            errorString_ = "Error invoking IDeckLinkInput::EnableVideoInput()";
         }
         return false;
     }
@@ -123,13 +122,13 @@ bool DeckLinkCapture::start(BMDDisplayMode displayMode,
     ComPtr<DeckLinkInputCallback> callback(new DeckLinkInputCallback());
     error_ = deckLinkInput_->SetCallback(callback.get());
     if (FAILED(error_)) {
-        errorString_ = "Error al invocar a IDeckLinkInput::SetCallback()";
+        errorString_ = "Error invoking IDeckLinkInput::SetCallback()";
         return false;
     }
 
     error_ = deckLinkInput_->StartStreams();
     if (FAILED(error_)) {
-        errorString_ = "Error al invocar a IDeckLinkInput::StartStream()";
+        errorString_ = "Error invoking IDeckLinkInput::StartStream()";
         return false;
     }
 
@@ -141,11 +140,11 @@ void DeckLinkCapture::stop()
 {
     error_ = deckLinkInput_->StopStreams();
     if (FAILED(error_))
-        errorString_ = "Error al invocar a IDeckLinkInput::StopStreams()";
+        errorString_ = "Error invoking IDeckLinkInput::StopStreams()";
 
     error_ = deckLinkInput_->DisableVideoInput();
     if (FAILED(error_))
-        errorString_ = "Error al invocar a IDeckLinkInput::DisableVideoInput()";
+        errorString_ = "Error invoking IDeckLinkInput::DisableVideoInput()";
 
     deckLinkInputCallback_.reset();
     grabbedVideoFrame_.reset();
@@ -175,7 +174,7 @@ bool DeckLinkCapture::retrieve(cv::Mat& videoFrame)
 
     if (!status) {
         error_ = E_FAIL;
-        errorString_ = "Error al convertir el formato de la imagen";
+        errorString_ = "Error converting the image format.";
         videoFrame.release();
         return false;
     }
@@ -203,7 +202,7 @@ std::string DeckLinkCapture::getDeviceModelName()
     const char* name;
     error_ = deckLink_->GetModelName(&name);
     if (FAILED(error_)) {
-        errorString_ = "Error al invocar a IDeckLinkInput::GetModelName()";
+        errorString_ = "Error invoking IDeckLinkInput::GetModelName()";
         return std::string();
     }
 
@@ -217,7 +216,7 @@ std::string DeckLinkCapture::getDeviceDisplayName()
     const char* name;
     error_ = deckLink_->GetDisplayName(&name);
     if (FAILED(error_)) {
-        errorString_ = "Error al invocar a IDeckLinkInput::GetDisplayName()";
+        errorString_ = "Error invoking IDeckLinkInput::GetDisplayName()";
         return std::string();
     }
 
