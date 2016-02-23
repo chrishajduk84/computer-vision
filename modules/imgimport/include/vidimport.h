@@ -55,7 +55,7 @@
  *
  */
 
-class VideoImport {
+class VideoImport : public ImageImport {
     public:
         /**
          * @brief Creates a VideoImport object

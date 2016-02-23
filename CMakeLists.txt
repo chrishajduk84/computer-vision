@@ -62,8 +62,8 @@ if(Boost_FOUND AND OpenCV_FOUND)
 	message(status "DeckLinkSDK not found. Omitting DeckLink features.")
     endif(DeckLinkSDK_FOUND)
 
-    add_executable(warg-cv main.cpp ${DeckLinkSDK_SRC_FILE})
-    target_link_libraries(warg-cv ${OpenCV_LIBS} ${Boost_LIBRARIES} ${DeckLinkSDK_LIBS} Core ReportGenerator CSVCreator TargetAnalysis TargetIdentification VolumeCalculation ImageImport GoogleMapsMatcher)
+    add_executable(warg-cv main.cpp)
+    target_link_libraries(warg-cv ${Boost_LIBRARIES} Core ReportGenerator CSVCreator TargetAnalysis TargetIdentification VolumeCalculation ImageImport GoogleMapsMatcher)
 
 endif()
 
