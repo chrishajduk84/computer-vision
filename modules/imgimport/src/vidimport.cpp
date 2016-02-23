@@ -60,13 +60,14 @@ IDeckLink* deckLink;
 
 VideoImport::VideoImport(){
     initVideoSource();
+    startCapture();
 }
 
 VideoImport::~VideoImport(){
-    
+    stopCapture();   
 }
 
-int initVideoSource()
+int VideoImport::initVideoSource()
 {
     ComPtr<IDeckLinkIterator> deckLinkIterator = CreateDeckLinkIteratorInstance();
     if (! deckLinkIterator) {
@@ -91,6 +92,7 @@ int initVideoSource()
                   		 << std::endl;
         return 2;
     }
+    return 0; 
 
 }
 
