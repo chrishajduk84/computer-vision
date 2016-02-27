@@ -39,7 +39,8 @@
 #include <boost/format.hpp>
 
 //If not using Decklink, omit the rest of the code. Note, if more cameras are added into this suite, this will need to change.
-#if HAS_DECKLINK
+#ifdef HAS_DECKLINK
+
 #include <DeckLinkAPI.h>
 #include "ComPtr.h"
 #include "DeckLinkCapture.h"
@@ -58,15 +59,6 @@ namespace logging = boost::log;
 std::vector<DeckLinkCapture> captures;
 std::vector<std::string> windows;
 IDeckLink* deckLink;
-
-VideoImport::VideoImport(){
-    initVideoSource();
-    startCapture();
-}
-
-VideoImport::~VideoImport(){
-    stopCapture();   
-}
 
 int VideoImport::initVideoSource()
 {
@@ -123,13 +115,12 @@ int stopCapture(){
 
 int grabFrame(cv::Mat* frame){
     BOOST_FOREACH(DeckLinkCapture& capture, captures)
-        {
-            capture.grab();
-        }
+    {
+        capture.grab();
+    }
         for(unsigned i = 0; i < captures.size(); ++i) {
             captures[i].retrieve(*frame);
         }
-     }
     return 0;
 }
 #endif

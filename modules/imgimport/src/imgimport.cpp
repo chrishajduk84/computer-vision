@@ -20,7 +20,6 @@
 
 ImageImport::ImageImport() {
 
-
 }
 
 //Decklink --- extract video frames from the 

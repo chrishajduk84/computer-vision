@@ -26,7 +26,7 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
-#if HAS_DECKLINK
+#ifdef HAS_DECKLINK
 #include <DeckLinkAPI.h>
 
 #include "ComPtr.h"
@@ -40,6 +40,8 @@
 using namespace boost;
 
 namespace logging = boost::log;
+
+int testResult = 1;
 
 int main()
 {
@@ -83,28 +85,28 @@ int main()
                       		     << std::endl;
     }
 
-    while (true) {
-        BOOST_FOREACH(DeckLinkCapture& capture, captures)
-        {
-            capture.grab();
-        }
-        for(unsigned i = 0; i < captures.size(); ++i) {
-            cv::Mat frame;
-            captures[i].retrieve(frame);
-            //Start Processing here
-            cv::imshow(windows[i], frame);
-        }
-        if (cv::waitKey(10) >= 0)
-            break;
+    BOOST_FOREACH(DeckLinkCapture& capture, captures)
+    {
+        capture.grab();
     }
-
+    for(unsigned i = 0; i < captures.size(); ++i) {
+        cv::Mat frame;
+        captures[i].retrieve(frame);
+        if (frame.rows > 0){
+	    BOOST_LOG_TRIVIAL(info) << "Frame Rows: " << frame.rows;
+            BOOST_LOG_TRIVIAL(info) << "Frame Columns: " << frame.cols;
+            testResult = 0; //The test was sucessful if it entered the 'if' statement.  
+	}        
+        //cv::imshow(windows[i], frame);
+    }
+   
     BOOST_FOREACH(DeckLinkCapture& capture, captures)
     {
         capture.stop();
     }
 
-    cv::destroyAllWindows();
+    //cv::destroyAllWindows();
 
-    return 0;
+    return testResult;
 }
 #endif
