@@ -37,6 +37,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <string>
 #include <vector>
+#include "imgimport.h"
 
 /** 
  * @class VidImport
@@ -60,13 +61,18 @@ class VideoImport : public ImageImport {
         /**
          * Creates a VideoImport object
          */
-        VideoImport();
+        VideoImport(std::string telemetry_path, std::vector<int> videoDeviceNums) : ImageImport(telemetry_path, "", videoDeviceNums){
+            	initVideoSource();
+       		startCapture();
+	}
 
-        ~VideoImport();
+        ~VideoImport(){
+        	stopCapture();
+	}
 
         /**
          * Begins capture. Creates a video stream which a frame may be grabbed from.
-         *
+        *
          * @return Status indicating whether the operation was successful or not.
          */
         int startCapture();
@@ -94,7 +100,7 @@ class VideoImport : public ImageImport {
          *
          * @return Status depicting whether or not the initialization process was successful.
          */
-        int InitVideoSource();
+        int initVideoSource();
 };
 
 #endif // IMAGE_IMPORT_H_INCLUDED
