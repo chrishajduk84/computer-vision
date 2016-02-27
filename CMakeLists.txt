@@ -59,7 +59,7 @@ if(Boost_FOUND AND OpenCV_FOUND)
         ADD_DEFINITIONS("-DHAS_DECKLINK")
 	SET(COMPILE_DEFINITIONS "${DeckLinkSDK_DEF}")
     else(DeckLinkSDK_FOUND)
-	message(status "DeckLinkSDK not found. Omitting DeckLink features.")
+	message(status " DeckLinkSDK not found. Omitting DeckLink features.")
     endif(DeckLinkSDK_FOUND)
 
     add_executable(warg-cv main.cpp)

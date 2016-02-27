@@ -26,6 +26,7 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
+#if HAS_DECKLINK
 #include <DeckLinkAPI.h>
 
 #include "ComPtr.h"
@@ -106,3 +107,4 @@ int main()
 
     return 0;
 }
+#endif
