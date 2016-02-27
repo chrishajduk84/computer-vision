@@ -58,28 +58,28 @@
 class VideoImport : public ImageImport {
     public:
         /**
-         * @brief Creates a VideoImport object
+         * Creates a VideoImport object
          */
         VideoImport();
 
         ~VideoImport();
 
         /**
-         * @brief Begins capture. Creates a video stream which a frame may be grabbed from.
+         * Begins capture. Creates a video stream which a frame may be grabbed from.
          *
          * @return Status indicating whether the operation was successful or not.
          */
         int startCapture();
 
         /**
-         * @brief Stops capture and releases the device for use by other software.
+         * Stops capture and releases the device for use by other software.
          *
          * @return Status indicating whether the operation was successful or not.
          */
 	int stopCapture();
 
-	 /**
-         * @brief Instantaneously retrieves a frame from the video stream in OpenCV format. 
+        /**
+         * Instantaneously retrieves a frame from the video stream in OpenCV format. 
          * 
          * @param frame Allocated OpenCV frame (Mat) to dump the frame data into.
          * 
@@ -88,8 +88,8 @@ class VideoImport : public ImageImport {
         int grabFrame(cv::Mat* frame);
     
     private:
-       /**
-         * @brief Function called when the VideoImport object is initialized. The module looks for 
+        /**
+         * Function called when the VideoImport object is initialized. The module looks for 
          * the decklink drivers, decklink device and prepares the hardware for capture. 
          *
          * @return Status depicting whether or not the initialization process was successful.

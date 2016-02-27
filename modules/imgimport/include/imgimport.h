@@ -63,8 +63,6 @@ class ImageImport {
         /**
          * @brief Creates a ImageImport for the telemetry file at the given path
          *
-
-         *
          * @param path Path of the telemetry file
          * @param photoPath directory containing image and video files to import is required but does not need to contain photos
          * @param videoDeviceNums indices of the video devices from which to read video frames
