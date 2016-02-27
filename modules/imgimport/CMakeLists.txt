@@ -4,10 +4,12 @@ include_directories(include ../core/include ${DeckLinkSDK_INCLUDE_PATH})
 ADD_DEFINITIONS("-DBOOST_LOG_DYN_LINK")
 
 if (DeckLinkSDK_FOUND)
-   include_directories(${DeckLinkSDK_INCLUDE_PATH})
+    include_directories(${DeckLinkSDK_INCLUDE_PATH})
+    add_library(ImageImport ${DeckLinkSDK_LIBS} ${DeckLinkSDK_SRC_FILE} src/DeckLinkCapture.cpp src/DeckLinkOpenCv.cpp src/DeckLinkInputCallback.cpp)
 endif (DeckLinkSDK_FOUND)
 
-add_library(ImageImport ${BOOST_LIBRARIES} ${DeckLinkSDK_LIBS} ${DeckLinkSDK_SRC_FILE} src/imgimport.cpp src/DeckLinkCapture.cpp src/DeckLinkOpenCv.cpp src/DeckLinkInputCallback.cpp)
+add_library(ImageImport ${BOOST_LIBRARIES} src/imgimport.cpp src/vidimport.cpp)
+
 target_compile_features(ImageImport PRIVATE)
 add_subdirectory("test")
 

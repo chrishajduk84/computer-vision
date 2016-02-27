@@ -38,8 +38,9 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
+//If not using Decklink, omit the rest of the code. Note, if more cameras are added into this suite, this will need to change.
+#if HAS_DECKLINK
 #include <DeckLinkAPI.h>
-
 #include "ComPtr.h"
 #include "DeckLinkCapture.h"
 
@@ -131,3 +132,4 @@ int grabFrame(cv::Mat* frame){
      }
     return 0;
 }
+#endif
