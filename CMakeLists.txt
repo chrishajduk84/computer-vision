@@ -4,14 +4,21 @@ project(warg-cv CXX)
 
 set(MODULES core csvcreator targetanalysis targetid volumecalc reportgen imgimport gmapsmatcher)
 
+#Adds a custom FIND<MODULE>.CMAKE folder to the project
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 # Dependencies
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED filesystem log thread system program_options unit_test_framework)
+find_package(Boost REQUIRED filesystem log thread system program_options)
+find_package(DeckLinkSDK REQUIRED)
 
 message(status " Boost Include: ${Boost_INCLUDE_DIR}")
 message(status " Boost Libraries: ${Boost_LIBRARIES}")
 message(status " OpenCV Include: ${OpenCV_INCLUDE_DIRS}")
 message(status " OpenCV Libraries: ${OpenCV_LIBS}")
+message(status " DeckLink Include: ${Boost_INCLUDE_DIR}")
+message(status " DeckLink Libraries: ${Boost_LIBS}")
 
 set(CMAKE_CXX_STANDARD 11)
 set(Boost_USE_MULTITHREADED      ON)
@@ -41,10 +48,12 @@ endif()
 message(status " CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
 message(status " CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
 
-if(Boost_FOUND AND OpenCV_FOUND)
+if(Boost_FOUND AND OpenCV_FOUND AND DeckLinkSDK_FOUND)
     ADD_DEFINITIONS("-DBOOST_LOG_DYN_LINK")
     include_directories(${Boost_INCLUDE_DIRS})
     include_directories(${OpenCV_INCLUDE_DIRS})
+    include_directories(${DeckLinkSDK_INCLUDE_DIRS})
+
     add_executable(warg-cv main.cpp)
-    target_link_libraries(warg-cv ${OpenCV_LIBS} ${Boost_LIBRARIES} Core ReportGenerator CSVCreator TargetAnalysis TargetIdentification VolumeCalculation ImageImport GoogleMapsMatcher)
+    target_link_libraries(warg-cv ${OpenCV_LIBS} ${Boost_LIBRARIES} ${DeckLinkSDK_LIBS} Core ReportGenerator CSVCreator TargetAnalysis TargetIdentification VolumeCalculation ImageImport GoogleMapsMatcher)
 endif()
