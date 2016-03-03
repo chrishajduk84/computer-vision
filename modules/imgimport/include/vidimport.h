@@ -61,7 +61,7 @@ class VideoImport : public ImageImport {
         /**
          * Creates a VideoImport object
          */
-        VideoImport(std::string telemetry_path, std::vector<int> videoDeviceNums) : ImageImport(telemetry_path, "", videoDeviceNums){
+        VideoImport() : ImageImport(){
             	initVideoSource();
        		startCapture();
 	}

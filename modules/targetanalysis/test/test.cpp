@@ -33,7 +33,6 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include "test.h"
 #include "target_loader.h"
 
 using namespace std;

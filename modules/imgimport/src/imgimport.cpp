@@ -13,7 +13,6 @@
 #include "imgimport.h"
 #include <vector>
 
-
 #ifdef HAS_DECKLINK
 #include <DeckLinkAPI.h>
 #endif
@@ -28,19 +27,3 @@ Frame * ImageImport::next_frame()
 {
     return NULL;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
