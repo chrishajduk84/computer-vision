@@ -30,7 +30,6 @@
 */
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MAIN
 #define BOOST_TEST_MODULE TargetIdentification
 #include <boost/test/unit_test.hpp>
 #include <boost/log/trivial.hpp>
