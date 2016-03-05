@@ -10,7 +10,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # Dependencies
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED filesystem log thread system program_options unit_test_framework)
-find_package(Boost REQUIRED filesystem log thread system program_options)
 find_package(DeckLinkSDK)
 
 message(status " Boost Include: ${Boost_INCLUDE_DIR}")
