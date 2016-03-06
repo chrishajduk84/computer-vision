@@ -29,46 +29,65 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <iostream>
+#include <utility>
+#include <vector>
+#include <errno.h>
+
+#include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include "test.h"
-#include "target_loader.h"
 
-using namespace std;
+#include <exiv2/exiv2.hpp>
+
+#include "exifgenerator.h"
+
+#define METADATA_NAMESPACE "Exif.Photo."
+#define METADATA_DATA "UserComment"
+#define METADATA_SIZELIMIT 255
+
 using namespace boost;
+using namespace std;
+using namespace Exiv2;
+using namespace cv;
 
 namespace logging = boost::log;
-/*
-class LoadFileTest : public BoolTest<string &> {
-    public:
-        LoadFileTest(string s): BoolTest(s) { }
 
-    protected:
-        bool test(string & arg) {
-            TargetLoader loader(arg);
-	    //loader.print(*loader.jsonParameters);
-	    //property_tree::ptree* root = loader.getJSON();
-	    return false;
-        }
-};
-*/
-int main(int argc, char ** argv) {
-    logging::core::get()->set_filter
-    (
-       logging::trivial::severity >= logging::trivial::info
-    );
-    if(argc <= 1) {
-        BOOST_LOG_TRIVIAL(info) << "Invalid arguments for test";
+Exiv2::Image::AutoPtr image;
+Exiv2::ExifData exifData;
+
+void ExifGenerator::init(Mat* img){
+    size_t size = img->step[0] * img->rows;
+    image = Exiv2::ImageFactory::open((const byte*)img, (long)size);
+    image->readMetadata();
+    exifData = image->exifData();
+}
+
+int ExifGenerator::appendMetadata(string data){
+    string currentData = readExif(METADATA_DATA);
+    return changeExif(METADATA_DATA, data);
+}
+
+int ExifGenerator::clearMetadata(){
+    return changeExif(METADATA_DATA, readExif(METADATA_DATA));
+}
+
+int ExifGenerator::changeExif(string field, string data){
+   if (currentData.size() + (*data).size() >= 255){
+        BOOST_LOG_TRIVIAL(error) << "EXIF Data is too large! Cannot append metadata!";
         return 1;
     }
-    string file = argv[0];
-    string description = argv[1];    
+    exifData[METADATA_NAMESPACE + field] = currentData + (*data);
+    BOOST_LOG_TRIVIAL(info) << "EXIF Data Size: " << currentData;
+    return 0;
+}
 
-    TargetLoader loader(file);
-    /*LoadFileTest test("Simple JSON File Load Process Using BOOST");
-    double result = test.do_test(file, description, false);
-    cout << result;*/
-    return 0;//!(result == 10); // arbitrary bounds for success of test
+string ExifGenerator::readExif(string field){
+    return exifData[METADATA_NAMESPACE + field];
+}
+
+int ExifGenerator::save(){
+    return image->writeMetadata();
 }

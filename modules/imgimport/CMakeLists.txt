@@ -10,7 +10,7 @@ if (DeckLinkSDK_FOUND)
     set(DeckLinkFiles ${DeckLinkSDK_LIBS} ${DeckLinkSDK_SRC_FILE} src/DeckLinkCapture.cpp src/DeckLinkOpenCv.cpp src/DeckLinkInputCallback.cpp)
 endif (DeckLinkSDK_FOUND)
 
-add_library(ImageImport ${BOOST_LIBRARIES} src/imgimport.cpp src/vidimport.cpp ${DeckLinkFiles})
+add_library(ImageImport ${BOOST_LIBRARIES} src/imgimport.cpp src/vidimport.cpp src/exifgenerator.cpp ${DeckLinkFiles})
 
 target_compile_features(ImageImport PRIVATE)
 add_subdirectory("test")
