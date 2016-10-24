@@ -1,7 +1,7 @@
 /* 
     This file is part of WARG's computer-vision
 
-    Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
+    Copyright (c) 2015-2016, Waterloo Aerial Robotics Group (WARG)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -64,4 +64,23 @@ bool PixelObjectList::addNode(PixelObject* po){
     }
 
     return false;
+
+}
+
+bool PixelObjectList::getGPSDuplicates(){
+    //TODO: Consider changing the return type.
+    //Should return array of probabilities (% error based on known GPS error and
+    //other parameters)
+    //After multiplying by the visual probability, a good estimate of whether or
+    //not it is a duplicate will be known
+    int i = 0;
+    while(i < listLength){
+        tail->po-> 
+        i++;
+    }
+    return true;
+}
+
+bool PixelObjectList::getVisualDuplicates(){
+    
 }

@@ -68,6 +68,8 @@ public:
     ~PixelObjectList();
     
     bool addNode(PixelObject* po);
+    bool getGPSDuplicates();
+    bool getVisualDuuplicates();
 };
 
 #endif // PIXEL_OBJECT_LIST_H_INCLUDED
