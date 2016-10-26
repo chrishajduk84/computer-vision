@@ -75,12 +75,13 @@ bool PixelObjectList::getGPSDuplicates(){
     //not it is a duplicate will be known
     int i = 0;
     while(i < listLength){
-        tail->po-> 
+        //tail->po-> 
         i++;
     }
     return true;
 }
 
-bool PixelObjectList::getVisualDuplicates(){
+//TODO:Add later to compare duplicate targets from a visual perspective
+//bool PixelObjectList::getVisualDuplicates(){
     
-}
+//}

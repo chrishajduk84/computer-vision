@@ -48,6 +48,15 @@
 **/
 
 #include "frame.h"
+#include "pixel_object.h"
+#include <math.h>
+
+//Macros and Definitions
+#define DEG2RAD(deg) (deg*180.0/M_PI)
+#define RAD2DEG(rad) (rad*M_PI/180.0)
+#define EARTH_RADIUS 6371000
+
+//Classes
 
 class TargetAnalyzer {
     static TargetAnalyzer * analyzer;
@@ -66,7 +75,9 @@ class TargetAnalyzer {
          * @param f Frame that the PixelTarget belongs to
          * @return pointer to the Target that the PixelTarget belongs to
          */
-        Target * analyze_targets_in_frame(PixelTarget * p, Frame * f);
+        void analyze_targets_in_frame(PixelObject * p, Frame * f);
+        //This will eventually need to be:
+        //Target * analyze_targets_in_frame(PixelTarget?, Frame?...)
 
         /**
          * @brief retrieves a vector containing all of the unique Targets that 
@@ -76,7 +87,35 @@ class TargetAnalyzer {
          *        
          * @return vector containing the unique Targets which have been analyzed
          */
-        vector<Target *> get_processed();
+        //vector<Target *> get_processed();
+        
+        /**
+         * @brief   Determines the longitude and latitude of the corners of the
+         *          image, assuming the geolocation provided in the telemetry is the
+         *          centroid of the photo. This function takes into account
+         *          possible rotations of the photo from the heading of the
+         *          aircraft.
+         *          
+         * @param   cameraAlpha Alpha_X and Alpha_Y values for the horizontal and vertical
+         *          values for the camera viewing (half-)angle. Measured from
+         *          the center of the photo to the outer most edge of the camera
+         *          image.
+         * @param   longitude The GPS longitude of the aircraft when the photo was
+         *          taken.
+         * @param   latitude The GPS latitude of the aircraft when the photo was
+         *          taken.
+         * @param   altitude The altitude of the aircraft from where it took the
+         *          photo.
+         * @param   heading The heading (GPS heading, not magnetic heading) from
+         *          where the aircraft took the photo.
+         * @param   img The image data for which the GPS coordinates are
+         *          calculated for. 
+         *        
+         * @return  vector containing the unique Targets which have been analyzed
+         */
+        void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
+double altitude, double heading, cv::Mat* img);
+
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED
