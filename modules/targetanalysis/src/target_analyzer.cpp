@@ -40,6 +40,7 @@ Evaluate each to classify as each target and apply percentage to
 #include "frame.h"
 #include "pixel_object.h"
 #include "target_analyzer.h"
+#include "target.h"
 
 void analyze_targets_in_frame(Frame * f, PixelObject t){
     
@@ -48,7 +49,7 @@ void analyze_targets_in_frame(Frame * f, PixelObject t){
 //Based on the GPS location of the image (location of 4 corners), calculates the
 //GPS location of a single point.
 void getGPSCentroid(cv::Point2d point){
-
+    
 }
 
 //Gets the GPS location of each corner of the image based on the center GPS
@@ -60,7 +61,7 @@ void getGPSCentroid(cv::Point2d point){
 //photo/gps grid. The lens profile may have a big effect here. See previous
 //todo.
 void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
-double altitude, double heading, cv::Mat* img){
+double altitude, double heading, cv::Mat* img, Target* t){
     //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
     double cameraX = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
     double cameraY = altitude * tan(cameraAlpha.y); //meters from center of photo to edge
@@ -68,7 +69,6 @@ double altitude, double heading, cv::Mat* img){
     //Haversine formula - rearranged
     //Note: These are false coordinates, as they still need to be rotated (with
     //a rotation matrix)
-    //TODO: Add macros
     double cameraXEdge = acos(1 - (1 -
     cos(cameraX/EARTH_RADIUS))/(cos(DEG2RAD(latitude))*cos(DEG2RAD(latitude)))) +
     longitude;
@@ -83,6 +83,11 @@ double altitude, double heading, cv::Mat* img){
     cameraYEdge;
     double realY = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
     cameraYEdge;
+
+    double unitX = realX/img->cols;
+    double unitY = realY/img->rows;
+
+    t->set_pixel_distance(unitX,unitY);
 
 
     //For future thought: THIS IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
