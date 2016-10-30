@@ -1,33 +1,17 @@
-/* 
-    This file is part of WARG's computer-vision
-
-    Copyright (c) 2015-2016, Waterloo Aerial Robotics Group (WARG)
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    1. Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-    3. Usage of this code MUST be explicitly referenced to WARG and this code
-       cannot be used in any competition against WARG.
-    4. Neither the name of the WARG nor the names of its contributors may be used
-       to endorse or promote products derived from this software without specific
-       prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY WARG ''AS IS'' AND ANY
-    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL WARG BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+/**
+ * @file target_analyzer.cpp
+ * @author WARG
+ *
+ * @section LICENSE
+ *
+ *  Copyright (c) 2015-2016, Waterloo Aerial Robotics Group (WARG)
+ *  All rights reserved.
+ *
+ *  This software is licensed under a modified version of the BSD 3 clause license
+ *  that should have been included with this software in a file called COPYING.txt
+ *  Otherwise it is available at:
+ *  https://raw.githubusercontent.com/UWARG/computer-vision/master/COPYING.txt
+ */
 
 /*TODO: First thing to do; 
 1) Convert Pixel location into actual location; Pixel Area into actual area
@@ -42,15 +26,36 @@ Evaluate each to classify as each target and apply percentage to
 #include "target_analyzer.h"
 #include "target.h"
 
-void analyze_targets_in_frame(Frame * f, PixelObject t){
-    
+void analyze_pixel_object(PixelObject* po){
+    //Generate GPS coordinates for each PixelObject
+    Frame* f = po->get_image();
+    Metadata* m = f->get_metadata();
+    double longitude = m->lon;
+    double latitude = m->lat;
+    double altitude = m->altitude;
+    getGPSCorners(<cameraalpha>,longitude,latitude,altitude,f->get_img(),po);
+    getGPSCentroid();
+    //Identify unique PixelObjects and combine non-unique objects - Compare with PixelObjectList
+ 
 }
 
-//Based on the GPS location of the image (location of 4 corners), calculates the
-//GPS location of a single point.
-void getGPSCentroid(cv::Point2d point){
+void generate_targets(PixelObjectList pol){ 
+    //Iterate through list and create targets
+
+
     
+    /*if (
+    //Create new Target object if a duplicate has not been found
+    Target t = new Target(); //TODO: Fill with appropriate constructor dataset
+
+    //*/
+
+
 }
+
+//Based on the GPS location of the image, calculates the
+//GPS location of a certain pixel in the image.
+void getGPSCentroid(cv::Point2d point){
 
 //Gets the GPS location of each corner of the image based on the center GPS
 //coordinate acquired by the GPS
@@ -61,7 +66,7 @@ void getGPSCentroid(cv::Point2d point){
 //photo/gps grid. The lens profile may have a big effect here. See previous
 //todo.
 void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
-double altitude, double heading, cv::Mat* img, Target* t){
+double altitude, double heading, cv::Mat* img, PixelObject* po){
     //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
     double cameraX = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
     double cameraY = altitude * tan(cameraAlpha.y); //meters from center of photo to edge
@@ -87,7 +92,7 @@ double altitude, double heading, cv::Mat* img, Target* t){
     double unitX = realX/img->cols;
     double unitY = realY/img->rows;
 
-    t->set_pixel_distance(unitX,unitY);
+    po->set_pixel_distance(unitX,unitY);
 
 
     //For future thought: THIS IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
@@ -95,4 +100,19 @@ double altitude, double heading, cv::Mat* img, Target* t){
     //30degreesC
     //This code assumes the top of the image is also pointing towards the heading
     //measured by the aircraft
+}
+
+void analyzeTargetDuplicateProbability(){
+    //Run functions to determine probability of the image displaying a duplicate based on visual, telemetry data.
+
+    //*TargetList*
+    //-Feature Matching
+    //-GPS coordinate matching
+    //-Area Matching
+    //-Perimeter Matching
+    //-Contour Matching
+    //-Colour Matching
+    //-Consider expected error
+
+
 }
