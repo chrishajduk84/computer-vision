@@ -23,23 +23,50 @@ Evaluate each to classify as each target and apply percentage to
 
 #include "frame.h"
 #include "pixel_object.h"
+#include "object_list.h"
 #include "target_analyzer.h"
 #include "target.h"
 
 void analyze_pixelobject(PixelObject* po){
-    //Generate GPS coordinates for each Object
-    Frame* f = po->get_image();
+    
+    //K I messed up, we still need a pixelObjectList. It still needs to sort
+    //through pixelobjects and group them, but not based on GPS coordinates, but
+    //relative dimensions, scale, colours, contour, area, and photo similarity
+    //Essentially, comapre and add into pixelObjectList
+
+    //extract unique pixelObjects and convert into objects
+    //Generate an object -- REMEMBER TO DEALLOCATE LATER
+    Object* o = new Object();
+    o->add_object(<INSERTPOHERE>);
+
+    //Return
+
+}
+
+void analyze_object(Object* o){
+    
+    //Generate GPS coordinates for each PixelObject
+    Frame* f = o->po->get_image();
     Metadata* m = f->get_metadata();
     double longitude = m->lon;
     double latitude = m->lat;
     double altitude = m->altitude;
-    getGPSCorners(<cameraalpha>,longitude,latitude,altitude,f->get_img(),po);
-    getGPSCentroid();
-    //Identify unique PixelObjects and combine non-unique objects - Compare with ObjectList
- 
+    getGPSCorners(<cameraalpha>,longitude,latitude,altitude,f->get_img(),o);
+    getGPSCentroid(); //Do I need this? or is 4 corners enough? Or maybe use
+    //this instead of the 4 corners
+    
+    //Identify unique Objects and combine non-unique objects - Compare with ObjectList
+    ObjectList::compareAdd(o)
+
+    //Extract unique objects and reformat into targets
+    Target* t = new Target();
+    t->add_object(<INSERTOHERE>); 
+
+    //Return
 }
 
-void generate_targets(ObjectList ol){ 
+/* WILL DECIDE THIS LATER, BUT NEED A WAY TO STORE TARGETS FOR REPORT GENERATION
+void generate_target_list(ObjectList ol){ 
     //Iterate through list and create targets
     for (int i = 0; i < ol.length(); i++){
         Object* t = pol.pop(); //Pop an array - it contains all duplicates
@@ -48,13 +75,13 @@ void generate_targets(ObjectList ol){
     //Place in TargetList
     //TODO: Make TargetList class
 
-    /*if (
+    if (
     //Create new Target object if a duplicate has not been found
     Target t = new Target(); //TODO: Fill with appropriate constructor dataset
-   */
+   
 
 
-}
+}*/
 
 //Based on the GPS location of the image, calculates the
 //GPS location of a certain pixel in the image.
