@@ -1,5 +1,5 @@
 /**
- * @file pixel_object_list.h
+ * @file object_list.h
  * @author WARG
  *
  * @section LICENSE
@@ -15,15 +15,15 @@
 
 
 #include "frame.h"
-#include "pixel_object.h"
-#include "pixel_object_list.h"
+#include "object.h"
+#include "object_list.h"
 
-PixelObjectList::PixelObjectList(){
+ObjectList::ObjectList(){
     listLength = 0;
     tail = head;
 }
 
-PixelObjectList::~PixelObjectList(){
+ObjectList::~ObjectList(){
     int i = 0;
     poNode* tempPointer;
     while(i<listLength){
@@ -34,10 +34,10 @@ PixelObjectList::~PixelObjectList(){
     }
 }
 
-bool PixelObjectList::addNode(PixelObject* po){
-    struct poNode* newNode = new struct poNode;
+bool ObjectList::addNode(Object* o){
+    struct oNode* newNode = new struct oNode;
     if (newNode){
-        newNode->po = po;
+        newNode->o = o;
         newNode->next = 0; //Nullify pointer (Since there is no next list item)
         //Update old node with the new node
         head->next = newNode;
@@ -52,7 +52,7 @@ bool PixelObjectList::addNode(PixelObject* po){
 
 }
 
-bool PixelObjectList::getGPSDuplicates(){
+bool ObjectList::getGPSDuplicates(){
     //TODO: Consider changing the return type.
     //Should return array of probabilities (% error based on known GPS error and
     //other parameters)
@@ -60,13 +60,13 @@ bool PixelObjectList::getGPSDuplicates(){
     //not it is a duplicate will be known
     int i = 0;
     while(i < listLength){
-        tail->po->
+        tail->o->
         i++;
     }
     return true;
 }
 
 //TODO:Add later to compare duplicate targets from a visual perspective
-//bool PixelObjectList::getVisualDuplicates(){
+//bool ObjectList::getVisualDuplicates(){
     
 //}

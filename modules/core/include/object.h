@@ -93,6 +93,14 @@ public:
     double get_error_angle();
 
     /**
+     * @brief Getter for the pixel distance
+     *
+     * @return The distance covered by each pixel of the image in the X and Y
+     * directions.
+     */
+    cv::Point2d get_pixel_distance(); 
+
+    /**
      * @brief Adds given PixelObject to Object's storage
      *        and recalculate target information
      *

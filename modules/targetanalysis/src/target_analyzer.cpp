@@ -26,8 +26,8 @@ Evaluate each to classify as each target and apply percentage to
 #include "target_analyzer.h"
 #include "target.h"
 
-void analyze_pixel_object(PixelObject* po){
-    //Generate GPS coordinates for each PixelObject
+void analyze_pixelobject(PixelObject* po){
+    //Generate GPS coordinates for each Object
     Frame* f = po->get_image();
     Metadata* m = f->get_metadata();
     double longitude = m->lon;
@@ -35,20 +35,23 @@ void analyze_pixel_object(PixelObject* po){
     double altitude = m->altitude;
     getGPSCorners(<cameraalpha>,longitude,latitude,altitude,f->get_img(),po);
     getGPSCentroid();
-    //Identify unique PixelObjects and combine non-unique objects - Compare with PixelObjectList
+    //Identify unique PixelObjects and combine non-unique objects - Compare with ObjectList
  
 }
 
-void generate_targets(PixelObjectList pol){ 
+void generate_targets(ObjectList ol){ 
     //Iterate through list and create targets
+    for (int i = 0; i < ol.length(); i++){
+        Object* t = pol.pop(); //Pop an array - it contains all duplicates
+    }
 
+    //Place in TargetList
+    //TODO: Make TargetList class
 
-    
     /*if (
     //Create new Target object if a duplicate has not been found
     Target t = new Target(); //TODO: Fill with appropriate constructor dataset
-
-    //*/
+   */
 
 
 }
@@ -66,7 +69,7 @@ void getGPSCentroid(cv::Point2d point){
 //photo/gps grid. The lens profile may have a big effect here. See previous
 //todo.
 void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
-double altitude, double heading, cv::Mat* img, PixelObject* po){
+double altitude, double heading, cv::Mat* img, Object* o){
     //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
     double cameraX = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
     double cameraY = altitude * tan(cameraAlpha.y); //meters from center of photo to edge
@@ -92,7 +95,7 @@ double altitude, double heading, cv::Mat* img, PixelObject* po){
     double unitX = realX/img->cols;
     double unitY = realY/img->rows;
 
-    po->set_pixel_distance(unitX,unitY);
+    p->set_pixel_distance(unitX,unitY);
 
 
     //For future thought: THIS IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL

@@ -29,11 +29,11 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef PIXEL_OBJECT_LIST_H_INCLUDED
-#define PIXEL_OBJECT_LIST_H_INCLUDED
+#ifndef OBJECT_LIST_H_INCLUDED
+#define OBJECT_LIST_H_INCLUDED
 
 /**
- * @file pixel_object_list.h
+ * @file object_list.h
  *
  * @brief Class which describes a structure for storing pixel targets and then
  * later finding a matching set of targets.
@@ -47,29 +47,29 @@
 **/
 
 #include "frame.h"
-#include "pixel_object.h"
+#include "object.h"
 
-struct poNode{
-    PixelObject* po;
-    struct poNode* next;
+struct oNode{
+    Object* o;
+    struct oNode* next;
 
 };
 
-class PixelObjectList 
+class ObjectList 
 {
 private:
-    poNode* head;
-    poNode* tail;
+    oNode* head;
+    oNode* tail;
     int listLength;
 public:
     //Constructor
-    PixelObjectList();
+    ObjectList();
     //Destructor
-    ~PixelObjectList();
+    ~ObjectList();
     
-    bool addNode(PixelObject* po);
+    bool addNode(Object* o);
     bool getGPSDuplicates();
-    bool getVisualDuuplicates();
+    bool getVisualDuplicates();
 };
 
-#endif // PIXEL_OBJECT_LIST_H_INCLUDED
+#endif // OBJECT_LIST_H_INCLUDED

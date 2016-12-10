@@ -80,14 +80,6 @@ public:
      */
     double get_error_angle();
 
-     /**
-     * @brief Getter for the pixel distance
-     *
-     * @return The distance covered by each pixel of the image in the X and Y
-     * directions.
-     */
-    cv::Point2d get_pixel_distance(); 
-
     /**
      * @brief Getter for image
      *
@@ -101,15 +93,6 @@ public:
      * @return Cropped image of the object associated with this Object
      */
     cv::Mat & get_cropped_image();
-
-    /**
-     * @brief Setter for the pixel distance.
-     *
-     * @param x The distance covered by each pixel of the image in the X.
-     * @param y The distance covered by each pixel of the image in the Y.
-     */
-    void set_pixel_distance(double x, double y);
-    void set_pixel_distance(cv::Point2d);
 
     /// add_object sets the PixelObject's frame pointer
     friend void Frame::add_object(PixelObject * o);
