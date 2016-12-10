@@ -104,9 +104,9 @@ public:
      * @brief Adds given PixelObject to Object's storage
      *        and recalculate target information
      *
-     * @param o PixelObject to be added
+     * @param po PixelObject to be added
      */
-    void add_object(Object * o);
+    void add_pobject(PixelObject * po);
 
     /**
      * @brief Getter for pixel Objects
