@@ -50,27 +50,26 @@
 #include "object.h"
 #include "pixel_object.h"
 
-struct poNode{
-    Object* o;
-    struct poNode* next;
+namespace PixelObjectList{
 
-};
+    struct poNode{
+        Object* o;
+        struct poNode* next;
 
-class ObjectList 
-{
-private:
-    oNode* head;
-    oNode* tail;
-    int listLength;
-public:
-    //Constructor
-    ObjectList();
-    //Destructor
-    ~ObjectList();
-    
+    };
+
+    struct _comparitor{
+        double similarity;
+        poNode* node;
+    } Comparitor;
+
+
+    poNode* head;
+    poNode* tail;
+    int listLength = 0;
+
     bool addNode(Object* o);
-    bool getGPSDuplicates();
-    bool getVisualDuplicates();
-};
-
-#endif // OBJECT_LIST_H_INCLUDED
+    //bool getGPSDuplicates();
+    //bool getVisualDuplicates();
+}
+#endif // PIXEL_OBJECT_LIST_H_INCLUDED

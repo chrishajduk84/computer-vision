@@ -23,6 +23,7 @@ Evaluate each to classify as each target and apply percentage to
 
 #include "frame.h"
 #include "pixel_object.h"
+#include "pixel_object_list.h"
 #include "object_list.h"
 #include "target_analyzer.h"
 #include "target.h"
@@ -33,15 +34,15 @@ void analyze_pixelobject(PixelObject* po){
     //through pixelobjects and group them, but not based on GPS coordinates, but
     //relative dimensions, scale, colours, contour, area, and photo similarity
     //Essentially, comapre and add into pixelObjectList
-
-    //extract unique pixelObjects and convert into objects
-    //Generate an object -- REMEMBER TO DEALLOCATE LATER
-    Object* o = new Object();
-    o->add_object(<INSERTPOHERE>);
-
-    //Return
+    PixelObjectList::addAndCompare(po);    
 
 }
+
+/* void SOMEFUNCTIONHERE - Needs to run once in a while to extract objects to
+ * pixelObjects
+void extract_objects(){
+
+}*/
 
 void analyze_object(Object* o){
     

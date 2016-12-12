@@ -19,90 +19,94 @@
 #include "pixel_object.h"
 #include "pixel_object_list.h"
 
-const double MATCH_THRESHOLD = 0.5;
+namespace PixelObjectList{
 
-struct _comparitor{
-    double similarity;
-    poNode* node;
-} Comparitor;
-
-
-PixelObjectList::PixelObjectList(){
-    listLength = 0;
-    tail = head;
-}
-
-PixelObjectList::~PixelObjectList(){
-    int i = 0;
-    poNode* tempPointer;
-    while(i<listLength){
-        tempPointer = tail;
-        tail = tail->next;
-        delete(tempPointer);
-        i++;
+    const double MATCH_THRESHOLD = 0.5;
+    
+    void cleanup(){
+        int i = 0;
+        poNode* tempPointer;
+        while(i<listLength){
+            tempPointer = tail;
+            tail = tail->next;
+            delete(tempPointer);
+            i++;
+        }
     }
-}
 
-void PixelObjectList::addNode(PixelObject* po){
-    struct poNode* newNode = new struct poNode;
-    newNode->o->add_pobject(po);
-    newNode->next = 0; //Nullify pointer (Since there is no next list item)
-    //Update old node with the new node
-    head->next = newNode;
-    //Change head to represent the new node
-    head = newNode;
-    //Update list length
-    listLength++;       
-}
+    void addNode(PixelObject* po){
+        //Initialize node
+        struct poNode* newNode = new struct poNode;
+        //Initialize object within node
+        Object* newObject = new Object;
+        newNode->o = newObject;
+        
+        newNode->o->add_pobject(po);
+        newNode->next = 0; //Nullify pointer (Since there is no next list item)
+        //Update old node with the new node
+        head->next = newNode;
+        //Change head to represent the new node
+        head = newNode;
+        //Update list length
+        listLength++;       
+    }
 
-double PixelObjectList::compareNode(PixelObject* po){
+    double compareNode(PixelObject* po1, PixelObject* po2){
+        vector<cv::Point> v1 = po1->get_contour();
+        vector<cv::Point> v2 = po2->get_contour();
+    
+        for (cv:Point i : v1){
+            BOOST_LOG_TRIVIAL(debug) << i;
+        }
+        for (cv:Point i : v2){
+            BOOST_LOG_TRIVIAL(debug) << i;
+        }   
+    }
 
+    void addAndCompare(PixelObject* po){
+        //Iterate over list
+        int i = 0;
+        Comparitor listMatch[listLength];
+        double maxSimilarity = 0;
+        int iMax = 0;
 
-}
+        poNode* tempPointer;
+        tempPointer = tail;
+        while(i<listLength){
+            //Returns similarity percentage - 1 is an ideal match, 0 is the worst
+            //match possible
+            listMatch[i].similarity = compareNode(po, tempPointer)
+            listMatch[i].node = tempPointer;
 
-void PixelObjectList::addAndCompare(PixelObject* po){
-    //Iterate over list
-    int i = 0;
-    Comparitor listMatch[listLength];
-    double maxSimilarity = 0;
-    int iMax = 0;
+            //Update the best match if a better one is available
+            if (listMatch[i].similarity > maxSimilarity){
+                maxSimilarity = listMatch[i].similarity;
+                iMax = i;
+            }
 
-    poNode* tempPointer;
-    tempPointer = tail;
-    while(i<listLength){
-        //Returns similarity percentage - 1 is an ideal match, 0 is the worst
-        //match possible
-        listMatch[i].similarity = compareNode(tempPointer)
-        listMatch[i].node = tempPointer;
-
-        //Update the best match if a better one is available
-        if (listMatch[i].similarity > maxSimilarity){
-            maxSimilarity = listMatch[i].similarity;
-            iMax = i;
+            i++
+            tempPointer = tempPointer->next;
         }
 
-        i++
-        tempPointer = tempPointer->next;
+        //Is the best match good enough - FUZZY LOGIC
+        //TODO: This should be a configurable value via a socket connection or a
+        //learning algorithm
+        if (maxSimilarity >= MATCH_THRESHOLD){
+            //The add_pobject function should also recalculate all parameters of the
+            //object.
+            listMatch[iMax].node->o->add_pobject(po);
+
+        }
+        else{
+            //Add the node to the end of the list for future comparisons
+            //Note, that objects that have already matched are not included for
+            //future comparisons...this may be unwise. Check the results and see
+            //what happens during test cases.    
+            addNode(po);
+        }
+
     }
-
-    //Is the best match good enough - FUZZY LOGIC
-    //TODO: This should be a configurable value via a socket connection or a
-    //learning algorithm
-    if (maxSimilarity >= MATCH_THRESHOLD){
-        //The add_pobject function should also recalculate all parameters of the
-        //object.
-       listMatch[iMax].node->o->add_pobject(po);
-
-    }
-    else{
-        //Add the node to the end of the list for future comparisons
-        //Note, that objects that have already matched are not included for
-        //future comparisons...this may be unwise. Check the results and see
-        //what happens during test cases.    
-        addNode(po);
-    }
-
-
+}
 /* NOT USING THIS
 bool PixelObjectList::getGPSDuplicates(){
     //TODO: Consider changing the return type.
