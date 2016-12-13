@@ -43,21 +43,23 @@ void analyze_pixelobject(PixelObject* po){
 void extract_objects(){
 
 }*/
-
+/*
 void analyze_object(Object* o){
     
     //Generate GPS coordinates for each PixelObject
-    Frame* f = o->po->get_image();
-    Metadata* m = f->get_metadata();
+    std::vector<PixelObject*> objects = o->get_pobjects();
+    Frame* f = objects.at(0)->get_image();
+    const Metadata* m = f->get_metadata();
     double longitude = m->lon;
     double latitude = m->lat;
     double altitude = m->altitude;
-    getGPSCorners(<cameraalpha>,longitude,latitude,altitude,f->get_img(),o);
-    getGPSCentroid(); //Do I need this? or is 4 corners enough? Or maybe use
+    cv::Point2d cameraalpha(45,45);
+    getGPSCorners(cameraalpha,longitude,latitude,altitude,o->get_image(),o);
+    //getGPSCentroid(); //Do I need this? or is 4 corners enough? Or maybe use
     //this instead of the 4 corners
     
     //Identify unique Objects and combine non-unique objects - Compare with ObjectList
-    ObjectList::compareAdd(o)
+    ObjectList::addAndCompare(o)
 
     //Extract unique objects and reformat into targets
     Target* t = new Target();
@@ -65,6 +67,7 @@ void analyze_object(Object* o){
 
     //Return
 }
+*/
 
 /* WILL DECIDE THIS LATER, BUT NEED A WAY TO STORE TARGETS FOR REPORT GENERATION
 void generate_target_list(ObjectList ol){ 
@@ -96,6 +99,9 @@ void getGPSCentroid(cv::Point2d point){
 //TODO: Add compensation for roll and pitch angles. This should skew the
 //photo/gps grid. The lens profile may have a big effect here. See previous
 //todo.
+
+}
+
 void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
 double altitude, double heading, cv::Mat* img, Object* o){
     //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
@@ -123,7 +129,7 @@ double altitude, double heading, cv::Mat* img, Object* o){
     double unitX = realX/img->cols;
     double unitY = realY/img->rows;
 
-    p->set_pixel_distance(unitX,unitY);
+    o->set_pixel_distance(unitX,unitY);
 
 
     //For future thought: THIS IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL

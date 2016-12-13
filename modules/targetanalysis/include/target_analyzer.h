@@ -116,6 +116,8 @@ class TargetAnalyzer {
         void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
 double altitude, double heading, cv::Mat* img);
 
+        void getGPSCentroid(cv::Point2d point);
+
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED

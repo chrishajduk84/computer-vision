@@ -58,10 +58,10 @@ namespace PixelObjectList{
 
     };
 
-    struct _comparitor{
+    struct comparitor{
         double similarity;
         poNode* node;
-    } Comparitor;
+    };
 
 
     poNode* head;
@@ -69,6 +69,9 @@ namespace PixelObjectList{
     int listLength = 0;
 
     bool addNode(Object* o);
+    double compareNode(PixelObject* po1, Object* o2);
+    void addAndCompare(PixelObject* po);
+        
     //bool getGPSDuplicates();
     //bool getVisualDuplicates();
 }

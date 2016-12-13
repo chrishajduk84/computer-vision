@@ -34,7 +34,7 @@ class PixelObject;
 
 class Object {
 public:
-    Object(std::string type);
+    Object();
 
     /**
      * @brief Getter for Object image
@@ -101,6 +101,24 @@ public:
     cv::Point2d get_pixel_distance(); 
 
     /**
+     * @brief Setter for the pixel distance
+     *
+     * @param The distance covered by each pixel of the image in the X and Y
+     * directions.
+     */
+    void set_pixel_distance(cv::Point2d); 
+
+    /**
+     * @brief Setter for the pixel distance
+     *
+     * @param The distance covered by each pixel of the image in the X direction.
+     * @param The distance covered by each pixel of the image in the Y
+     * direction.
+     */
+    void set_pixel_distance(double x, double y); 
+
+
+    /**
      * @brief Adds given PixelObject to Object's storage
      *        and recalculate target information
      *
@@ -114,7 +132,7 @@ public:
      * @return Array containing all of the PixelObjects that were used to
      *         create this instance of Object
      */
-    const std::vector<Object *> & get_objects();
+    const std::vector<PixelObject *> & get_pobjects();
 private:
 
     /**

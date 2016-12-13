@@ -18,6 +18,9 @@
 #include "object.h"
 #include "pixel_object.h"
 #include "pixel_object_list.h"
+#include <boost/log/trivial.hpp>
+
+using namespace boost;
 
 namespace PixelObjectList{
 
@@ -51,22 +54,22 @@ namespace PixelObjectList{
         listLength++;       
     }
 
-    double compareNode(PixelObject* po1, PixelObject* po2){
-        vector<cv::Point> v1 = po1->get_contour();
-        vector<cv::Point> v2 = po2->get_contour();
+    double compareNode(PixelObject* po1, Object* o2){
+        std::vector<cv::Point> v1 = po1->get_contour();
+        //std::vector<cv::Point> v2 = po2->get_contour();
     
-        for (cv:Point i : v1){
+        for (cv::Point i : v1){
             BOOST_LOG_TRIVIAL(debug) << i;
         }
-        for (cv:Point i : v2){
+        /*for (cv::Point i : v2){
             BOOST_LOG_TRIVIAL(debug) << i;
-        }   
+        } */  
     }
 
     void addAndCompare(PixelObject* po){
         //Iterate over list
         int i = 0;
-        Comparitor listMatch[listLength];
+        struct comparitor listMatch[listLength];
         double maxSimilarity = 0;
         int iMax = 0;
 
@@ -75,7 +78,7 @@ namespace PixelObjectList{
         while(i<listLength){
             //Returns similarity percentage - 1 is an ideal match, 0 is the worst
             //match possible
-            listMatch[i].similarity = compareNode(po, tempPointer)
+            listMatch[i].similarity = compareNode(po, tempPointer->o);
             listMatch[i].node = tempPointer;
 
             //Update the best match if a better one is available
@@ -84,7 +87,7 @@ namespace PixelObjectList{
                 iMax = i;
             }
 
-            i++
+            i++;
             tempPointer = tempPointer->next;
         }
 
