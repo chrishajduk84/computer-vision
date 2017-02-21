@@ -23,19 +23,25 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/property_tree/ptree.hpp>
+
 #include "target_analyzer.h"
+#include "target_identifier.h"
+#include "canny_contour_creator.h"
+#include "k_means_filter.h"
+#include "frame.h"
+
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#define PIXEL_OBJECTS_PER_IMAGE 7
 
 using namespace std;
 using namespace boost;
+using namespace cv;
 
 namespace logging = boost::log;
 using namespace boost::filesystem;
-
-typedef struct _poList{
-    PixelObject* po;
-    _poList* next;
-
-} POList;
 
 bool has_suffix(const std::string &str, const std::string &suffix)
 {
@@ -53,33 +59,66 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
     
     //Read directory
     BOOST_REQUIRE( filesystem::exists( root_path ) );
-    directory_iterator end_itr; // default construction yields past-the-end
+    directory_iterator end_itr; // default construction yields past-the-end iterator
+    int fileCount = std::count_if(directory_iterator(root_path),directory_iterator(),static_cast<bool(*)(const
+                path&)>(is_regular_file));
+   
+   
     int numImage = 0;
+    int numPixelObjects = 0;
+    PixelObject* pointerList[fileCount * PIXEL_OBJECTS_PER_IMAGE];
+    KMeansFilter * filter = new KMeansFilter();
+    CannyContourCreator * ccreator = new CannyContourCreator();
+
     for ( directory_iterator itr( root_path ); itr != end_itr; ++itr ){
         if ( is_regular_file(itr->path()) ){
             string current_file = itr->path().string();
             if (has_suffix(current_file, ".jpg") || has_suffix(current_file,
             ".jpeg")){
-                //imread() - FINISH LATER
-                //Generate cv::mat
-                //PixelObject po(//FILL THIS IN );
+                
+                //Manually generate a PixelObject
+                cv::Mat img = imread(current_file, CV_LOAD_IMAGE_UNCHANGED);
+                Frame f(&img, current_file, Metadata()); //Blank Metadata, Blank Timestamp
 
+                //Generate Contour
+                ObjectDetector detector(filter, ccreator);
+                detector.process_frame(&f);
+                vector<Point> results;
+                for (PixelObject * o : f.get_objects()) {
+                                       
+                    vector<cv::Point> contour = results;//{cv::Point(0,0),cv::Point(0,1),cv::Point(1,1),cv::Point(1,0)};
+                    /*
+                    cv::Point2d centroid(0,0);
+                    double area = 0; 
+                    double perimeter = 0;
+                    cv::Scalar colour(127,127,127);
+                    cv::Point2d error(0,0);
+                    double errorAngle = 0;
+                    */
+                    //BOOST_LOG_TRIVIAL(trace) << "Centroid: " << o->get_centroid();
+                    
+                    //POList
+                    pointerList[numPixelObjects++] = o; //new PixelObject(img,contour,centroid,area,perimeter,colour,error,errorAngle);
+                }
                 numImage++;
             }
 
         }
     }
-    
-    //Artifically construct pixel objects
-    PixelObject POTests[numImage];
-    for (int i = 0; i < numImage; i++){
-        POTests[i]   ; //Do things
-        
-        //Inject into analysis
-        analyze_pixelobject(&(POTests[i])); 
+    BOOST_LOG_TRIVIAL(debug) << "Images in test: " << numImage;
+    BOOST_LOG_TRIVIAL(debug) << "PixelObjects in test: " << numPixelObjects;
+
+    BOOST_WARN_MESSAGE(numPixelObjects == 75, "Unexpected number of pixel objects, has the target id algorithm changed? Are there more images than expected?"); //If the number of test photos has changed, this integration test may become invalid
+    BOOST_WARN_MESSAGE(numImage == 24, "Image repository has been updated. Expect inconsistent test data.");
+
+
+    //Inject into analysis
+    TargetAnalyzer* ta = TargetAnalyzer::getInstance();
+    for (int i = 0; i < numPixelObjects; i++){
+        BOOST_LOG_TRIVIAL(trace) << "Processing Image: " << i;
+        ta->analyze_pixelobject(pointerList[i]); 
     }
 
-    //BOOST_REQUIRE();
 
     //NEGATIVE CHECK - Check how many different targets there are
     
@@ -88,7 +127,13 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
     //in each according to the predefined images
 
 
-    //BOOST_CHECK();
-    
+    BOOST_CHECK(1);
+
+    //Cleanup
+    delete filter;
+    delete ccreator;
+    for (int i = 0; i < numPixelObjects; i++){
+        delete pointerList[i];
+    }
    
 }

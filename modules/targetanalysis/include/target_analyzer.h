@@ -49,6 +49,7 @@
 
 #include "frame.h"
 #include "pixel_object.h"
+#include "object.h"
 #include <math.h>
 
 //Macros and Definitions
@@ -60,13 +61,18 @@
 
 class TargetAnalyzer {
     static TargetAnalyzer * analyzer;
-    TargetAnalyzer();
+    TargetAnalyzer(){};
 
     void cleanup();                
     public:
 
-        static const TargetAnalyzer * getInstance();
-
+        static TargetAnalyzer * getInstance(){
+            if (!analyzer){
+                analyzer = new TargetAnalyzer;
+            }
+            return analyzer;
+        }
+    
         /**
          * @brief Analyzes a pixeltarget and returns a pointer to the unique target 
          *        it belongs to
@@ -75,7 +81,7 @@ class TargetAnalyzer {
          * @param f Frame that the PixelTarget belongs to
          * @return pointer to the Target that the PixelTarget belongs to
          */
-        void analyze_targets_in_frame(PixelObject * p, Frame * f);
+  //      void analyze_targets_in_frame(PixelObject * p, Frame * f);
         //This will eventually need to be:
         //Target * analyze_targets_in_frame(PixelTarget?, Frame?...)
 
@@ -114,10 +120,11 @@ class TargetAnalyzer {
          * @return  vector containing the unique Targets which have been analyzed
          */
         void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
-double altitude, double heading, cv::Mat* img);
+double altitude, double heading, cv::Mat* img, Object* o);
 
         void getGPSCentroid(cv::Point2d point);
-
+        void analyze_pixelobject(PixelObject* po);
+        void analyzeTargetDuplicateProbability();
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED

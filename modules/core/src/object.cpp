@@ -29,4 +29,19 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "object.h"
+#include "pixel_object.h"
+
+Object::Object(){
+
+}
+
+void Object::add_pobject(PixelObject * po){
+    pixelObjects.push_back(po);
+}
+
+const std::vector<PixelObject*>& Object::get_pobjects(){
+    return pixelObjects; 
+}
+
 

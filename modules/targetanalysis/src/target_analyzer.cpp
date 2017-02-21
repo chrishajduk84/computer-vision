@@ -28,13 +28,23 @@ Evaluate each to classify as each target and apply percentage to
 #include "target_analyzer.h"
 #include "target.h"
 
-void analyze_pixelobject(PixelObject* po){
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/core.hpp>
+
+TargetAnalyzer* TargetAnalyzer::analyzer = NULL;
+
+void TargetAnalyzer::analyze_pixelobject(PixelObject* po){
     
     //K I messed up, we still need a pixelObjectList. It still needs to sort
     //through pixelobjects and group them, but not based on GPS coordinates, but
     //relative dimensions, scale, colours, contour, area, and photo similarity
     //Essentially, comapre and add into pixelObjectList
-    PixelObjectList::addAndCompare(po);    
+    BOOST_LOG_TRIVIAL(debug) << "HEY0";
+    PixelObjectList* pol = PixelObjectList::getInstance();
+    BOOST_LOG_TRIVIAL(debug) << "HEY1";
+    pol->addAndCompare(po);
+    BOOST_LOG_TRIVIAL(debug) << "HEYend";
 
 }
 
@@ -89,7 +99,7 @@ void generate_target_list(ObjectList ol){
 
 //Based on the GPS location of the image, calculates the
 //GPS location of a certain pixel in the image.
-void getGPSCentroid(cv::Point2d point){
+void TargetAnalyzer::getGPSCentroid(cv::Point2d point){
 
 //Gets the GPS location of each corner of the image based on the center GPS
 //coordinate acquired by the GPS
@@ -102,7 +112,7 @@ void getGPSCentroid(cv::Point2d point){
 
 }
 
-void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
+void TargetAnalyzer::getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
 double altitude, double heading, cv::Mat* img, Object* o){
     //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
     double cameraX = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
@@ -129,7 +139,7 @@ double altitude, double heading, cv::Mat* img, Object* o){
     double unitX = realX/img->cols;
     double unitY = realY/img->rows;
 
-    o->set_pixel_distance(unitX,unitY);
+    //o->set_pixel_distance(unitX,unitY);  UNDEFINED FOR THE TIME BEING - ADD TO Object.cpp
 
 
     //For future thought: THIS IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
@@ -139,7 +149,7 @@ double altitude, double heading, cv::Mat* img, Object* o){
     //measured by the aircraft
 }
 
-void analyzeTargetDuplicateProbability(){
+void TargetAnalyzer::analyzeTargetDuplicateProbability(){
     //Run functions to determine probability of the image displaying a duplicate based on visual, telemetry data.
 
     //*TargetList*
@@ -150,6 +160,4 @@ void analyzeTargetDuplicateProbability(){
     //-Contour Matching
     //-Colour Matching
     //-Consider expected error
-
-
 }

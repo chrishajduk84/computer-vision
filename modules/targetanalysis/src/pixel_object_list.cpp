@@ -19,14 +19,21 @@
 #include "pixel_object.h"
 #include "pixel_object_list.h"
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/core.hpp>
+
+
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 using namespace boost;
+using namespace std;
+using namespace cv;
 
-namespace PixelObjectList{
 
-    const double MATCH_THRESHOLD = 0.5;
-    
-    void cleanup(){
+PixelObjectList* PixelObjectList::firstInstance = NULL;
+
+    PixelObjectList::~PixelObjectList(){
         int i = 0;
         poNode* tempPointer;
         while(i<listLength){
@@ -37,36 +44,78 @@ namespace PixelObjectList{
         }
     }
 
-    void addNode(PixelObject* po){
+    void PixelObjectList::addNode(PixelObject* po){
         //Initialize node
         struct poNode* newNode = new struct poNode;
         //Initialize object within node
         Object* newObject = new Object;
         newNode->o = newObject;
         
+        BOOST_LOG_TRIVIAL(debug) << "Adding new node";
         newNode->o->add_pobject(po);
+        BOOST_LOG_TRIVIAL(debug) << "TEST";
         newNode->next = 0; //Nullify pointer (Since there is no next list item)
+        BOOST_LOG_TRIVIAL(debug) << "TEST2";
+
         //Update old node with the new node
-        head->next = newNode;
+        if (head){  //If HEAD has been initialized already
+            head->next = newNode;
+        }
+        else{ //If HEAD hasn't been initialized already
+            tail = newNode;
+        }
+        BOOST_LOG_TRIVIAL(debug) << "TEST3";
         //Change head to represent the new node
         head = newNode;
         //Update list length
-        listLength++;       
+        listLength++;      
+        BOOST_LOG_TRIVIAL(debug) << "New List Length: " << listLength;
     }
 
-    double compareNode(PixelObject* po1, Object* o2){
-        std::vector<cv::Point> v1 = po1->get_contour();
-        //std::vector<cv::Point> v2 = po2->get_contour();
-    
-        for (cv::Point i : v1){
-            BOOST_LOG_TRIVIAL(debug) << i;
+    double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
+        const vector<PixelObject*>& poList = o2->get_pobjects();
+        
+        double minimumError = 1;
+        vector<cv::Point> minimumContour;
+        for (PixelObject* po2 : poList){
+            vector<cv::Point> v1 = po1->get_contour();
+            vector<cv::Point> v2 = po2->get_contour();
+            Point c1 = po1->get_centroid();
+            Point c2 = po2->get_centroid();
+
+            int a1 = po1->get_area();
+            int a2 = po2->get_area();
+        
+            double areaScale = (double)a1/a2;
+
+            //Rotate different Angles
+            int numIntervals = 36; //Should vary based on computation time requirements
+            vector<cv::Point> v2Mod[numIntervals]; 
+            vector<cv::Point> v1Mod;
+        
+            //Center the contour at (0,0)
+            for (Point i : v1){
+                v1Mod.push_back(i - c1);
+            }
+
+            //Center the contour at (0,0) and rotate it
+            for (int interval = 0; interval < numIntervals; interval++){
+                double theta = 2*M_PI/numIntervals * interval;
+            
+                for (Point i : v2){
+                    v2Mod[interval].push_back(Point(areaScale*cos(theta) - areaScale*sin(theta) - c2.x, areaScale*sin(theta) + areaScale*cos(theta)));
+                }    
+            }
+            vector<vector<cv::Point>> v2hull;
+            convexHull( Mat(v2Mod[0]), v2hull[0], false ); 
+            Mat drawing = Mat::zeros(500,500, CV_8UC3);
+            //TODO: figure out how to draw it to test out the algorithm
+            //drawContours(drawing, vector<vector<Point>>(v2Mod,v2Mod+numIntervals*sizeof(v2Mod[0])), 0, cv::Scalar(255,255,255), FILLED);
+            BOOST_LOG_TRIVIAL(debug) << "MADE IT";
         }
-        /*for (cv::Point i : v2){
-            BOOST_LOG_TRIVIAL(debug) << i;
-        } */  
     }
 
-    void addAndCompare(PixelObject* po){
+    void PixelObjectList::addAndCompare(PixelObject* po){
         //Iterate over list
         int i = 0;
         struct comparitor listMatch[listLength];
@@ -75,12 +124,15 @@ namespace PixelObjectList{
 
         poNode* tempPointer;
         tempPointer = tail;
+        BOOST_LOG_TRIVIAL(debug) << "List Length: " << listLength;
         while(i<listLength){
             //Returns similarity percentage - 1 is an ideal match, 0 is the worst
             //match possible
             listMatch[i].similarity = compareNode(po, tempPointer->o);
+            BOOST_LOG_TRIVIAL(debug) << "Compare Done";
             listMatch[i].node = tempPointer;
 
+            BOOST_LOG_TRIVIAL(debug) << "Updating next one";
             //Update the best match if a better one is available
             if (listMatch[i].similarity > maxSimilarity){
                 maxSimilarity = listMatch[i].similarity;
@@ -109,7 +161,7 @@ namespace PixelObjectList{
         }
 
     }
-}
+
 /* NOT USING THIS
 bool PixelObjectList::getGPSDuplicates(){
     //TODO: Consider changing the return type.

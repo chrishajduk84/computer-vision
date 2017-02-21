@@ -50,8 +50,11 @@
 #include "object.h"
 #include "pixel_object.h"
 
-namespace PixelObjectList{
+class PixelObjectList{
 
+const double MATCH_THRESHOLD = 0.5;
+
+private:
     struct poNode{
         Object* o;
         struct poNode* next;
@@ -64,15 +67,31 @@ namespace PixelObjectList{
     };
 
 
-    poNode* head;
-    poNode* tail;
+    poNode* head = NULL;
+    poNode* tail = NULL;
     int listLength = 0;
+    
+    static PixelObjectList* firstInstance;
 
-    bool addNode(Object* o);
+    //This list is a singleton instance - These definitions need to be private.
+    PixelObjectList(){};
+    PixelObjectList& operator=(PixelObjectList*){}; // Private assignment operator
+    PixelObjectList(PixelObjectList const&){};
+    ~PixelObjectList();
+public:
+    
+    static PixelObjectList* getInstance(){
+        if (!firstInstance){
+            firstInstance = new PixelObjectList;
+        }
+        return firstInstance;
+    }
+
+    void addNode(PixelObject* o);
     double compareNode(PixelObject* po1, Object* o2);
     void addAndCompare(PixelObject* po);
         
     //bool getGPSDuplicates();
     //bool getVisualDuplicates();
-}
+};
 #endif // PIXEL_OBJECT_LIST_H_INCLUDED
