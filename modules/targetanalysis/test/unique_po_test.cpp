@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
     if(boost::unit_test::framework::master_test_suite().argc <= 1) {
         BOOST_ERROR("Invalid number of arguments");
     }
-    
+
     string root_path = boost::unit_test::framework::master_test_suite().argv[1];
     string description = boost::unit_test::framework::master_test_suite().argv[2];    
     

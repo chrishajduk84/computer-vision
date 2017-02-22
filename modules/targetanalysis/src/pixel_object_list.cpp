@@ -18,6 +18,7 @@
 #include "object.h"
 #include "pixel_object.h"
 #include "pixel_object_list.h"
+#include "contour_comparison.h"
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/core.hpp>
@@ -51,11 +52,8 @@ PixelObjectList* PixelObjectList::firstInstance = NULL;
         Object* newObject = new Object;
         newNode->o = newObject;
         
-        BOOST_LOG_TRIVIAL(debug) << "Adding new node";
         newNode->o->add_pobject(po);
-        BOOST_LOG_TRIVIAL(debug) << "TEST";
         newNode->next = 0; //Nullify pointer (Since there is no next list item)
-        BOOST_LOG_TRIVIAL(debug) << "TEST2";
 
         //Update old node with the new node
         if (head){  //If HEAD has been initialized already
@@ -64,18 +62,17 @@ PixelObjectList* PixelObjectList::firstInstance = NULL;
         else{ //If HEAD hasn't been initialized already
             tail = newNode;
         }
-        BOOST_LOG_TRIVIAL(debug) << "TEST3";
         //Change head to represent the new node
         head = newNode;
         //Update list length
         listLength++;      
-        BOOST_LOG_TRIVIAL(debug) << "New List Length: " << listLength;
+        BOOST_LOG_TRIVIAL(debug) << "Node added. New List Length: " << listLength;
     }
 
     double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
         const vector<PixelObject*>& poList = o2->get_pobjects();
         
-        double minimumError = 1;
+        double maxSimilarity = 0;
         vector<cv::Point> minimumContour;
         for (PixelObject* po2 : poList){
             vector<cv::Point> v1 = po1->get_contour();
@@ -83,14 +80,19 @@ PixelObjectList* PixelObjectList::firstInstance = NULL;
             Point c1 = po1->get_centroid();
             Point c2 = po2->get_centroid();
 
+            //TODO: Choose A1, A2, po1, po2 based on the smaller area...saves time on computation
             int a1 = po1->get_area();
             int a2 = po2->get_area();
-        
+            
+            if (a1 == 0 || a2 == 0){
+                continue;
+            }
+
             double areaScale = (double)a1/a2;
 
             //Rotate different Angles
             int numIntervals = 36; //Should vary based on computation time requirements
-            vector<cv::Point> v2Mod[numIntervals]; 
+            vector<vector<cv::Point>> v2Mod; 
             vector<cv::Point> v1Mod;
         
             //Center the contour at (0,0)
@@ -98,20 +100,84 @@ PixelObjectList* PixelObjectList::firstInstance = NULL;
                 v1Mod.push_back(i - c1);
             }
 
-            //Center the contour at (0,0) and rotate it
+            //Center the contour at (0,0) and rotate it and scale it
             for (int interval = 0; interval < numIntervals; interval++){
                 double theta = 2*M_PI/numIntervals * interval;
-            
+                BOOST_LOG_TRIVIAL(debug) << "theta: " << theta << ", aS: " <<
+                areaScale << ", C2: " << c2 << endl;
+
+                vector<cv::Point> tempVec;
                 for (Point i : v2){
-                    v2Mod[interval].push_back(Point(areaScale*cos(theta) - areaScale*sin(theta) - c2.x, areaScale*sin(theta) + areaScale*cos(theta)));
+                    tempVec.push_back(Point(areaScale*cos(theta)*(i.x-c2.x) - areaScale*sin(theta)*(i.y-c2.y), areaScale*sin(theta)*(i.x-c2.x) + areaScale*cos(theta)*(i.y-c2.y)));
                 }    
+                v2Mod.push_back(tempVec);
             }
-            vector<vector<cv::Point>> v2hull;
-            convexHull( Mat(v2Mod[0]), v2hull[0], false ); 
-            Mat drawing = Mat::zeros(500,500, CV_8UC3);
-            //TODO: figure out how to draw it to test out the algorithm
-            //drawContours(drawing, vector<vector<Point>>(v2Mod,v2Mod+numIntervals*sizeof(v2Mod[0])), 0, cv::Scalar(255,255,255), FILLED);
+            
+            BOOST_LOG_TRIVIAL(debug) << v2Mod[0];
+           
+            
+            float radius1, radius2;
+            Point2f center1, center2;
+            minEnclosingCircle(v1Mod,center1,radius1);
+            minEnclosingCircle(v2Mod[0],center2,radius2);
+            //If areas are similar, check size. If its way off (factor of 2), move onto next iteration.
+            if (abs(radius1 - radius2) > radius1||abs(radius1 - radius2) > radius2){
+                //Skip analysis to save computation time
+                continue;
+            }
+
+            for (int i = 0; i < numIntervals; i++){
+                //Reposition the contours for Mat operations (in the positive quadrant)
+                Point matReference(radius1-center1.x > radius2-center2.x?radius1-center1.x:radius2-center2.x, radius1-center1.y > radius2-center2.y?radius1-center1.y:radius2-center2.y);
+                for (int j = 0; j < v1Mod.size();j++){
+                    v1Mod[j] = v1Mod[j] + matReference;
+                }
+                for (int j = 0; j < v2Mod[i].size(); j++){
+                    v2Mod[i][j] = v2Mod[i][j] + matReference;
+                }
+                vector<vector<Point>> contoursWrapperA, contoursWrapperB;
+                contoursWrapperA.push_back(v1Mod);
+                contoursWrapperB.push_back(v2Mod[i]);
+                
+                //No point comparing contours if there is only one.
+                if (listLength >= 1){
+                    double sim = compare_contours(contoursWrapperA, contoursWrapperB);
+                    if (maxSimilarity < sim){
+                        BOOST_LOG_TRIVIAL(debug) << "Found new optimized position: " << sim;
+                        maxSimilarity = sim;
+                        minimumContour = v2Mod[i];
+                        
+                        //Visualization
+                        /*if (sim > 0.7){
+                            Mat drawing = Mat::zeros(matReference.x*2, matReference.y*2, CV_8UC3);
+
+                            drawContours(drawing, contoursWrapperA, 0, cv::Scalar(255,0,255), FILLED);
+                            drawContours(drawing, contoursWrapperB, 0, cv::Scalar(0,255,255), FILLED);
+ 
+                            namedWindow( "Duplicate Contours", CV_WINDOW_AUTOSIZE );
+                            imshow( "Duplicate Contours", drawing );
+                            waitKey(0);
+                        } */  
+                    }
+                }
+            }
+
+
+            /*****************Visualization
+            for (int i = 0; i < numIntervals; i++){
+                //Reposition the contours for optimal viewing
+                for (int j = 0; j < v2Mod[i].size(); j++){
+                    v2Mod[i][j] = v2Mod[i][j] + Point(CANVAS_SIZE/2,CANVAS_SIZE/2);
+                }
+                drawContours(drawing, v2Mod, i, cv::Scalar((int)(255*((double)i/numIntervals)),(int)(255*((double)i/numIntervals)),255), FILLED);
+            }
+            //vector<vector<Point>> hull2; hull2.push_back(hull);
+            //drawContours(drawing, hull2, 0, cv::Scalar(255,255,255), FILLED);
             BOOST_LOG_TRIVIAL(debug) << "MADE IT";
+            namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
+            imshow( "Contours", drawing );
+            waitKey(0);
+            ****************************/
         }
     }
 

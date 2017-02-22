@@ -44,6 +44,7 @@
 #include <fstream>
 #include "frame.h"
 #include "target_identifier.h"
+#include "target_analyzer.h"
 #include "imgimport.h"
 #include "decklink_import.h"
 #include "pictureimport.h"
@@ -78,6 +79,7 @@ int processors;
 ImageImport * importer = NULL;
 TargetIdentifier identifier;
 MetadataInput * logReader = NULL;
+TargetAnalyzer * analyzer = NULL;
 
 double aveFrameTime = 1000;
 int frameCount = 0;
@@ -87,8 +89,15 @@ void worker(Frame* f) {
     workers++;
     assert(!f->get_img().empty());
     identifier.process_frame(f);
-    if (intermediate && f->get_objects().size() > 0) {
+    int poSize = f->get_objects().size();
+    if (intermediate && poSize > 0) {
         intermediate_buffer.push(f);
+    }
+    
+    //Analyze the image after it is identified
+    analyzer = TargetAnalyzer::getInstance();
+    for (int i = 0; i < poSize; i++){
+        analyzer->analyze_pixelobject(f->get_objects()[i]);
     }
 
     workers--;
@@ -168,6 +177,7 @@ int main(int argc, char** argv) {
 
     ioService.post(boost::bind(read_images));
     ioService.post(boost::bind(assign_workers));
+    //ioService.post(boost::bind());
     ioService.post(boost::bind(output));
 
     boost::asio::io_service::work work(ioService);
