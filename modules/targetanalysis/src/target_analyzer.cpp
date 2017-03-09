@@ -32,7 +32,10 @@ Evaluate each to classify as each target and apply percentage to
 #include <boost/log/expressions.hpp>
 #include <boost/log/core.hpp>
 
+using namespace std;
+
 TargetAnalyzer* TargetAnalyzer::analyzer = NULL;
+vector<Object*> mostRecentObjectList;
 
 void TargetAnalyzer::analyze_pixelobject(PixelObject* po){
     
@@ -40,19 +43,25 @@ void TargetAnalyzer::analyze_pixelobject(PixelObject* po){
     //through pixelobjects and group them, but not based on GPS coordinates, but
     //relative dimensions, scale, colours, contour, area, and photo similarity
     //Essentially, comapre and add into pixelObjectList
-    BOOST_LOG_TRIVIAL(debug) << "HEY0";
     PixelObjectList* pol = PixelObjectList::getInstance();
-    BOOST_LOG_TRIVIAL(debug) << "HEY1";
     pol->addAndCompare(po);
-    BOOST_LOG_TRIVIAL(debug) << "HEYend";
+    BOOST_LOG_TRIVIAL(debug) << "End Analysis";
 
 }
 
-/* void SOMEFUNCTIONHERE - Needs to run once in a while to extract objects to
- * pixelObjects
-void extract_objects(){
 
-}*/
+/* void SOMEFUNCTIONHERE - Needs to run once in a while to extract objects to
+ * pixelObjects*/
+vector<Object*> TargetAnalyzer::extract_objects(){
+    PixelObjectList* pol = PixelObjectList::getInstance();
+    pol->getObjects(&mostRecentObjectList);
+    return mostRecentObjectList;
+}
+
+int TargetAnalyzer::get_unique_objects_length(){
+    PixelObjectList* pol = PixelObjectList::getInstance();
+    return pol->getListLength();
+}
 /*
 void analyze_object(Object* o){
     

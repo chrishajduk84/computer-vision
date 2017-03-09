@@ -121,13 +121,22 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
 
 
     //NEGATIVE CHECK - Check how many different targets there are
-    
+    int listLength = ta->get_unique_objects_length();
+    BOOST_CHECK(listLength == 69);
 
     //POSITIVE CHECK - Check how many targets got grouped together and how many
-    //in each according to the predefined images
-
-
-    BOOST_CHECK(1);
+    //in each according to the predefined images => There should  be 3 grouped
+    //into a single object.
+    vector<Object*> list = ta->extract_objects();
+    int i = 0;
+    for (Object* o : list){
+        int size = o->get_pobjects().size();
+        BOOST_LOG_TRIVIAL(debug) << i << ": " << size;
+        if (size >=1){
+            BOOST_CHECK(size == 2);
+        }
+        i++;
+    }
 
     //Cleanup
     delete filter;

@@ -51,6 +51,7 @@
 #include "pixel_object.h"
 #include "object.h"
 #include <math.h>
+#include <vector>
 
 //Macros and Definitions
 #define DEG2RAD(deg) (deg*180.0/M_PI)
@@ -125,6 +126,8 @@ double altitude, double heading, cv::Mat* img, Object* o);
         void getGPSCentroid(cv::Point2d point);
         void analyze_pixelobject(PixelObject* po);
         void analyzeTargetDuplicateProbability();
+        std::vector<Object*> extract_objects();
+        int get_unique_objects_length();
 };
 
 #endif // TARGET_ANALYZER_H_INCLUDED

@@ -49,6 +49,7 @@
 #include "frame.h"
 #include "object.h"
 #include "pixel_object.h"
+#include <vector>
 
 class PixelObjectList{
 
@@ -72,9 +73,10 @@ private:
     int listLength = 0;
     
     static PixelObjectList* firstInstance;
-
+    int COMPARE_AREA;
+    double VISUAL_THRESHOLD;
     //This list is a singleton instance - These definitions need to be private.
-    PixelObjectList(){};
+    PixelObjectList(){VISUAL_THRESHOLD = 0.8; COMPARE_AREA = 400;};
     PixelObjectList& operator=(PixelObjectList*){}; // Private assignment operator
     PixelObjectList(PixelObjectList const&){};
     ~PixelObjectList();
@@ -89,9 +91,13 @@ public:
 
     void addNode(PixelObject* o);
     double compareNode(PixelObject* po1, Object* o2);
+    double compareGPS(PixelObject* po1, Object* o2);
+    double compareContours(PixelObject* po1, Object* o2);
+    double compareColour(PixelObject* po1, Object* o2);
+
     void addAndCompare(PixelObject* po);
-        
-    //bool getGPSDuplicates();
-    //bool getVisualDuplicates();
+    int getListLength();
+    Object* getObject(int index);
+    void getObjects(std::vector<Object*>* v);
 };
 #endif // PIXEL_OBJECT_LIST_H_INCLUDED
