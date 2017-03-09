@@ -1,33 +1,18 @@
-/* 
-    This file is part of WARG's computer-vision
+/**
+ * @file pixel_object_list.h
+ * @author WARG
+ *
+ * @section LICENSE
+ *
+ *  Copyright (c) 2015-2017, Waterloo Aerial Robotics Group (WARG)
+ *  All rights reserved.
+ *
+ *  This software is licensed under a modified version of the BSD 3 clause license
+ *  that should have been included with this software in a file called COPYING.txt
+ *  Otherwise it is available at:
+ *  https://raw.githubusercontent.com/UWARG/computer-vision/master/COPYING.txt
+ */
 
-    Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    1. Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-    3. Usage of this code MUST be explicitly referenced to WARG and this code 
-       cannot be used in any competition against WARG.
-    4. Neither the name of the WARG nor the names of its contributors may be used 
-       to endorse or promote products derived from this software without specific
-       prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY WARG ''AS IS'' AND ANY
-    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL WARG BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 
 #ifndef PIXEL_OBJECT_LIST_H_INCLUDED
 #define PIXEL_OBJECT_LIST_H_INCLUDED
@@ -35,9 +20,7 @@
 /**
  * @file pixel_object_list.h
  *
- * @brief Class which describes a structure for storing pixel targets and then
- * later finding a matching set of targets.
- *
+ * @brief *
  * Module geolocates targets using their pixel locations
  * and photo metadata, determines target type and calculates 
  * possible error. As targets are processed unique targets will 
@@ -51,37 +34,106 @@
 #include "pixel_object.h"
 #include <vector>
 
+
+/**
+ * @class PixelObjectList
+ *  
+ * PixelObjectList describes a structure for storing pixeltargets and grouping
+ * similar ones together. The duplicate and unique forms can then be later found
+ * within a unique 'Object' class. The object class contains all pixel objects
+ * as well as their averaged data, with accompanying error rates.
+ *
+ * Module geolocates targets using their pixel locations, visual contour
+ * and photo metadata, determines target type and calculates 
+ * possible error. As targets are processed unique targets will 
+ * be identified and the data combined into a single object.
+ *
+ * This class is a singleton.
+ *
+ * @brief Detects unique visual pixel objects and groups them into object based
+ * on GPS, visual contour and colour. PixelObjectList is a singleton.
+ *
+ */
+
 class PixelObjectList{
-
+/*
+ * MATCH_THRESHOLD is a fuzzy logic variable, which determines the similarity
+ * that a Pixel Object must have to another one in terms of the key attributes
+ */
 const double MATCH_THRESHOLD = 0.5;
-
 private:
+    /**
+     * poNode is an instance of a unique object. As part of a linked list, it
+     * is linked to other nodes that are deemed also unique. 
+     */
     struct poNode{
         Object* o;
         struct poNode* next;
 
     };
 
-    struct comparitor{
-        double similarity;
-        poNode* node;
-    };
-
-
+    /**
+     * head is the end of the linked list.
+     */
     poNode* head = NULL;
+    
+     /**
+     * tail is the beginning of the linked list.
+     */
     poNode* tail = NULL;
+    /**
+     * The total length of the list is stored in the listLength variable.
+     */
     int listLength = 0;
     
+    /*
+     * firstInstance is a self referencing instance for this singleton class.
+     */
     static PixelObjectList* firstInstance;
+
+    /*
+     * COMPARE_AREA is a constant (in principle), which at any point can be
+     * adjusted. It determines the size of the contours which are compared. It
+     * is used to maintain cv::Mat structures with optimal dimensions. Reducing
+     * this value is equivalent to reducing the resolution of the contours and
+     * would improve computation time.
+     */
     int COMPARE_AREA;
+
+    /*
+     * VISUAL_THRESHOLD determines how similar two contours need to be inorder
+     * to be designated a 'duplicate'.
+     */
     double VISUAL_THRESHOLD;
-    //This list is a singleton instance - These definitions need to be private.
+    
+    /*
+     * Constructor for PixelObjectList
+     * 
+     * This is a private constructor due to the singleton instance. Use
+     * getInstance(), to get or make a new PixelObjectList.
+     */
     PixelObjectList(){VISUAL_THRESHOLD = 0.8; COMPARE_AREA = 400;};
+
+    /*
+     * Private operator assignment to prevent mismanagement of singleton
+     * instance.
+     */
     PixelObjectList& operator=(PixelObjectList*){}; // Private assignment operator
+    
+    /*
+     * Private copy constructor to prevent mismanagement of singleton instance.
+     */
     PixelObjectList(PixelObjectList const&){};
+
+    /*
+     * Destructor for PixelObjectList.
+     */
     ~PixelObjectList();
 public:
-    
+    /*
+     * getInstance() returns the singleton instance of this class. If it is not
+     * instantiated it is initialized.
+     */
     static PixelObjectList* getInstance(){
         if (!firstInstance){
             firstInstance = new PixelObjectList;
@@ -89,15 +141,86 @@ public:
         return firstInstance;
     }
 
+    /*
+     * addNode(PixelObject* o) adds a new unique node to the end of the PixelObjectList.
+     * @param o the pixelobject that is converted to an object and added to the
+     * list.
+     */
     void addNode(PixelObject* o);
-    double compareNode(PixelObject* po1, Object* o2);
-    double compareGPS(PixelObject* po1, Object* o2);
-    double compareContours(PixelObject* po1, Object* o2);
-    double compareColour(PixelObject* po1, Object* o2);
 
+    /*
+     * compareNode(PixelObject* po1, Object* o2) compares po1 to the
+     * pixelobjects within o2, however many they may be.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have unique parameter in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */
+    double compareNode(PixelObject* po1, Object* o2);
+    
+    /*
+     * compareGPS(PixelObject* po1, Object* o2) compares the GPS position of
+     * object based on their proximity to one another.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have unique parameter in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */
+    double compareGPS(PixelObject* po1, Object* o2);
+    
+    /*
+     * compareContours(PixelObject* po1, Object* o2) compares the visual outline
+     * of an object based on the similarity of the shape and overlap of both
+     * objects.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have unique contours in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */ 
+    double compareContours(PixelObject* po1, Object* o2);
+    
+    /*
+     * compareColour(PixelObject* po1, Object* o2) compares the average colour value
+     * of an object based on previous objects and the criteria for what
+     * potential colour may be within the scope of detection.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have a unique colour in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */
+    double compareColour(PixelObject* po1, Object* o2);
+    
+    /*
+     * addAndCompare(PixelObject* po) iterates the comparison over all known
+     * Objects based on the comparison critera. The decision to add a new object
+     * to the end of the list, or push it into a duplicate is decided here based
+     * on some fuzzy logic.
+     * @param po the PixelObject that is being compared and judged.
+     */
     void addAndCompare(PixelObject* po);
+    
+    /*
+     * getListLength() is a size getter.
+     * @return provides a size value of the current list
+     */
     int getListLength();
+    
+    /*
+     * getObject(int index) is a getter for unique objects based on their
+     * position in the list.
+     * @param index 0-based index for getting unique targets from the list
+     * @return a pointer to the unique object requested.
+     */
     Object* getObject(int index);
+    
+    /*
+     * getObjects(std::vector<Object*>* v) returns ALL objects.
+     * @param v a return parameter to all the objects in the list.
+     */
     void getObjects(std::vector<Object*>* v);
 };
 #endif // PIXEL_OBJECT_LIST_H_INCLUDED

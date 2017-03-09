@@ -1,10 +1,10 @@
 /**
- * @file pixel_object_list.h
+ * @file pixel_object_list.cpp
  * @author WARG
  *
  * @section LICENSE
  *
- *  Copyright (c) 2015-2016, Waterloo Aerial Robotics Group (WARG)
+ *  Copyright (c) 2015-2017, Waterloo Aerial Robotics Group (WARG)
  *  All rights reserved.
  *
  *  This software is licensed under a modified version of the BSD 3 clause license
