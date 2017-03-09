@@ -17,18 +17,6 @@
 #ifndef PIXEL_OBJECT_LIST_H_INCLUDED
 #define PIXEL_OBJECT_LIST_H_INCLUDED
 
-/**
- * @file pixel_object_list.h
- *
- * @brief *
- * Module geolocates targets using their pixel locations
- * and photo metadata, determines target type and calculates 
- * possible error. As targets are processed unique targets will 
- * be identified and the data combined into a single object.
- *
- *
-**/
-
 #include "frame.h"
 #include "object.h"
 #include "pixel_object.h"
@@ -72,6 +60,15 @@ private:
 
     };
 
+    /**
+     * comparitor is a structure used in the processing and sorting of nodes for
+     * decisions regarding merging duplicate objects or not.
+     */
+    struct comparitor{
+        double similarity;
+        poNode* node;
+
+    };
     /**
      * head is the end of the linked list.
      */
@@ -133,6 +130,7 @@ public:
     /*
      * getInstance() returns the singleton instance of this class. If it is not
      * instantiated it is initialized.
+     * @return the singleton PixelObjectList
      */
     static PixelObjectList* getInstance(){
         if (!firstInstance){

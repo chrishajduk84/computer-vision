@@ -4,7 +4,7 @@
  *
  * @section LICENSE
  *
- *  Copyright (c) 2015-2016, Waterloo Aerial Robotics Group (WARG)
+ *  Copyright (c) 2015-2017, Waterloo Aerial Robotics Group (WARG)
  *  All rights reserved.
  *
  *  This software is licensed under a modified version of the BSD 3 clause license
@@ -12,14 +12,6 @@
  *  Otherwise it is available at:
  *  https://raw.githubusercontent.com/UWARG/computer-vision/master/COPYING.txt
  */
-
-/*TODO: First thing to do; 
-1) Convert Pixel location into actual location; Pixel Area into actual area
-2) Add classfiers for targets using:
-Area, Centroid, Perimeter, Colour, Error, contour, edge magnitude
-Evaluate each to classify as each target and apply percentage to 
-3) 
-*/
 
 #include "frame.h"
 #include "pixel_object.h"
@@ -39,19 +31,13 @@ vector<Object*> mostRecentObjectList;
 
 void TargetAnalyzer::analyze_pixelobject(PixelObject* po){
     
-    //K I messed up, we still need a pixelObjectList. It still needs to sort
-    //through pixelobjects and group them, but not based on GPS coordinates, but
-    //relative dimensions, scale, colours, contour, area, and photo similarity
-    //Essentially, comapre and add into pixelObjectList
     PixelObjectList* pol = PixelObjectList::getInstance();
     pol->addAndCompare(po);
-    BOOST_LOG_TRIVIAL(debug) << "End Analysis";
+    BOOST_LOG_TRIVIAL(trace) << "End of Analysis";
 
 }
 
 
-/* void SOMEFUNCTIONHERE - Needs to run once in a while to extract objects to
- * pixelObjects*/
 vector<Object*> TargetAnalyzer::extract_objects(){
     PixelObjectList* pol = PixelObjectList::getInstance();
     pol->getObjects(&mostRecentObjectList);
@@ -62,49 +48,6 @@ int TargetAnalyzer::get_unique_objects_length(){
     PixelObjectList* pol = PixelObjectList::getInstance();
     return pol->getListLength();
 }
-/*
-void analyze_object(Object* o){
-    
-    //Generate GPS coordinates for each PixelObject
-    std::vector<PixelObject*> objects = o->get_pobjects();
-    Frame* f = objects.at(0)->get_image();
-    const Metadata* m = f->get_metadata();
-    double longitude = m->lon;
-    double latitude = m->lat;
-    double altitude = m->altitude;
-    cv::Point2d cameraalpha(45,45);
-    getGPSCorners(cameraalpha,longitude,latitude,altitude,o->get_image(),o);
-    //getGPSCentroid(); //Do I need this? or is 4 corners enough? Or maybe use
-    //this instead of the 4 corners
-    
-    //Identify unique Objects and combine non-unique objects - Compare with ObjectList
-    ObjectList::addAndCompare(o)
-
-    //Extract unique objects and reformat into targets
-    Target* t = new Target();
-    t->add_object(<INSERTOHERE>); 
-
-    //Return
-}
-*/
-
-/* WILL DECIDE THIS LATER, BUT NEED A WAY TO STORE TARGETS FOR REPORT GENERATION
-void generate_target_list(ObjectList ol){ 
-    //Iterate through list and create targets
-    for (int i = 0; i < ol.length(); i++){
-        Object* t = pol.pop(); //Pop an array - it contains all duplicates
-    }
-
-    //Place in TargetList
-    //TODO: Make TargetList class
-
-    if (
-    //Create new Target object if a duplicate has not been found
-    Target t = new Target(); //TODO: Fill with appropriate constructor dataset
-   
-
-
-}*/
 
 //Based on the GPS location of the image, calculates the
 //GPS location of a certain pixel in the image.
@@ -158,9 +101,8 @@ double altitude, double heading, cv::Mat* img, Object* o){
     //measured by the aircraft
 }
 
-void TargetAnalyzer::analyzeTargetDuplicateProbability(){
-    //Run functions to determine probability of the image displaying a duplicate based on visual, telemetry data.
-
+   //Run functions to determine probability of the image displaying a duplicate based on visual, telemetry data.
+    //Things to consider for the future:
     //*TargetList*
     //-Feature Matching
     //-GPS coordinate matching
@@ -169,4 +111,4 @@ void TargetAnalyzer::analyzeTargetDuplicateProbability(){
     //-Contour Matching
     //-Colour Matching
     //-Consider expected error
-}
+

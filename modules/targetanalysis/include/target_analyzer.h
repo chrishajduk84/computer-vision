@@ -1,33 +1,18 @@
-/* 
-    This file is part of WARG's computer-vision
+/**
+ * @file target_analyzer.h
+ * @author WARG
+ *
+ * @section LICENSE
+ *
+ *  Copyright (c) 2015-2017, Waterloo Aerial Robotics Group (WARG)
+ *  All rights reserved.
+ *
+ *  This software is licensed under a modified version of the BSD 3 clause license
+ *  that should have been included with this software in a file called COPYING.txt
+ *  Otherwise it is available at:
+ *  https://raw.githubusercontent.com/UWARG/computer-vision/master/COPYING.txt
+ */
 
-    Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    1. Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-    3. Usage of this code MUST be explicitly referenced to WARG and this code 
-       cannot be used in any competition against WARG.
-    4. Neither the name of the WARG nor the names of its contributors may be used 
-       to endorse or promote products derived from this software without specific
-       prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY WARG ''AS IS'' AND ANY
-    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL WARG BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 
 #ifndef TARGET_ANALYZER_H_INCLUDED
 #define TARGET_ANALYZER_H_INCLUDED
@@ -60,13 +45,34 @@
 
 //Classes
 
+/**
+ * @class TargetAnalyzer
+ *  
+ * TargetAnalyzer is a wrapper module for the PixelObjectList class. It handles
+ * the entry and exit points for every form of interaction with the target
+ * analysis module.
+ * This class is a singleton.
+ *
+ * @brief Provides a procedure for analyzing pixel objects, as well as
+ * extracting data from the results. PixelObjectList is a singleton.
+ *
+ */
 class TargetAnalyzer {
+    /*
+     * analyzer is the static singleton instance of the TargetAnalyzer class
+     */
     static TargetAnalyzer * analyzer;
+    /*
+     * Private constructor due to singleton design pattern.
+     */ 
     TargetAnalyzer(){};
-
-    void cleanup();                
+      
     public:
-
+        /*
+         * getInstance() returns the singleton instance of this class. If it is not
+         * instantiated it is initialized.
+         * @return the singleton TargetAnalyzer
+         */
         static TargetAnalyzer * getInstance(){
             if (!analyzer){
                 analyzer = new TargetAnalyzer;
@@ -123,10 +129,35 @@ class TargetAnalyzer {
         void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
 double altitude, double heading, cv::Mat* img, Object* o);
 
-        void getGPSCentroid(cv::Point2d point);
+        /*
+         * analyze_pixelobject(PixelObject* po) is the entry function into this
+         * module, it initializes the comparisons that are made for each
+         * PixelObject.
+         * @param po the PixelObject that as being analyzed.
+         */
         void analyze_pixelobject(PixelObject* po);
-        void analyzeTargetDuplicateProbability();
+
+        /*
+         * A function which based on any point in an image, provides the GPS
+         * coordinates of that point.
+         * -> THIS FUNCTION IS STILL WIP AND WILL BE FULLY DEVELOPED IN A
+         * SEPERATE PR
+         */
+        void getGPSCentroid(cv::Point2d point);
+        
+        /*
+         * extract_objects() provides a list of unique objects that have been
+         * identified, where the non-unique ones have been grouped.
+         * @return the vector of Objects with identifies the unique ones found.
+         */
         std::vector<Object*> extract_objects();
+
+        /*
+         * get_unique_objects_length() provides the total number of objects that
+         * have been found within the data acquired.
+         * @return the integer number of Objects that can be extracted by using
+         * the extract_objects() function.
+         */ 
         int get_unique_objects_length();
 };
 
