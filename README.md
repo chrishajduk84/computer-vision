@@ -12,37 +12,53 @@ System Overview:
 Photos to use for testing:
 * [2014 Competition](https://drive.google.com/open?id=0BySpWXvmBM4JWGhrZGk5UWNqNm8&authuser=0)
 * [2015 Competition](https://drive.google.com/open?id=0B8ozhZojJMQbfkx4WTlOYnJQV3dKcHFxc0F5c1JkU2FHRzRsM2VVU3VzV3JGeUlZQU9iN00&authuser=1)
+* [2016 Competition](https://ece.uwaterloo.ca/~warg/downloads/flightdata/competition2016/)
+* [All Flight Data](https://ece.uwaterloo.ca/~warg/downloads/flightdata/)
 
 CONOPS/Rules:
 * [2015 CONOPS/Rules](https://drive.google.com/open?id=0BySpWXvmBM4JajdsemZFb0o2Ukk&authuser=0)
 * [2016 CONOPS/Rules](https://drive.google.com/open?id=0BySpWXvmBM4JUnhyaGN0NW5OR1k)
+* [2017 CONOPS/Rules](https://drive.google.com/file/d/0BySpWXvmBM4JNlFyX18xTUpPOG8/view?usp=sharing)
 
 ### Building and Installing
-Well... seeing as there isn't actually any source in the repository yet, this isn't actually possible at the moment
-
-When we have actually implemented stuff the following will probably apply
 
 **Build system**: CMake to set up build environment then whatever CMake gives you (depends on platform, make for Linux, etc.)
 
 **Dependencies**: 
-    [OpenCV 3.0](http://opencv.org/downloads.html)
-    [Boost 1.58](http://www.boost.org/users/download/)
-    [DeckLink](http://www.blackmagicdesign.com/support/sdks)
+    [OpenCV 3.0](http://opencv.org/downloads.html),
+    [Boost 1.58](http://www.boost.org/users/download/),
+    [DeckLink](http://www.blackmagicdesign.com/support/sdks) _(optional)_,
+    [ZBar] (http://zbar.sourceforge.net/download.html) 
 
 ####Installation Instructions:
-1. Clone the Project
-2. Install dependencies
-3. Use CMake to setup the project from the CMake list
-4. Compile
+If you intend to use Windows or Mac, you will need to run a Docker image. The Docker image is pre-configured with the appropriate libraries. Please refer to the instructions here: [Docker Installation](http://docs.uwarg.com/computer-vision/)
+
+*For Linux:*
+
+1. Install the dependencies listed above. This may vary based on your system. 
+2. Clone the Project
+3. Run `./build.sh` to build and compile the project.
+
+Refer to the detailed instructions here: [Linux Installation](http://docs.uwarg.com/computer-vision/Building-the-project-[Linux]/)
+
+####Running the Program
+After compiling, an executable will be present in the build directory. To run it type: 
+
+`./warg-cv`
+
+####Testing the Program
+After compiling, in the build directory run:
+
+`make test` or `make test ARGS='-V'` for verbose output
 
 ####Goal:
 To fill this chart with the right values:
 [Judges Evaluation Sheet](https://drive.google.com/open?id=0B8ozhZojJMQbWTBWaXBiXzBQcFk)
 
-This includes latitudes, longitudes, centroids, areas, volumes, and QR codes.
+This evaluation sheet includes spots to fill with latitudes, longitudes, centroids, areas, volumes, and QR code values.
 
 ### Licensing
-Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
+Copyright (c) 2015-2016, Waterloo Aerial Robotics Group (WARG)
 
 All rights reserved.
 
