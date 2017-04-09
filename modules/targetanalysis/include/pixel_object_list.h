@@ -22,6 +22,10 @@
 #include "pixel_object.h"
 #include <vector>
 
+//Macros and Definitions
+#define DEG2RAD(deg) (deg*180.0/M_PI)
+#define RAD2DEG(rad) (rad*M_PI/180.0)
+#define EARTH_RADIUS 6371000
 
 /**
  * @class PixelObjectList
@@ -167,7 +171,22 @@ public:
      * @return the result from 0 to 1, based on the similarity of the PO and O.
      */
     double compareGPS(PixelObject* po1, Object* o2);
-    
+
+    /*
+     * getGPS(...) calculates the GPS coordinates (latitude, longitude) of a
+     * specific point in a frame.
+     * @param point the point at which the latitude and longitude should be
+     * determined at.
+     * @param cameraAlpha the alpha angle of the lens of the camera. This
+     * defines how much can be seen and what effect altitude has on the image
+     * scaling.
+     * @param f the frame for which the point is calculated for.
+     * @return A Point, where the first value is the latitude and the second is
+     * the longitude.
+     */
+    cv::Point2d* getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
+Frame* f);
+
     /*
      * compareContours(PixelObject* po1, Object* o2) compares the visual outline
      * of an object based on the similarity of the shape and overlap of both

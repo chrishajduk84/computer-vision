@@ -40,6 +40,30 @@ void Object::add_pobject(PixelObject * po){
     pixelObjects.push_back(po);
 }
 
+void Object::update(){
+    int n = Object::pixelObjects.size();
+    this->centroid = cv::Point2f(0,0);
+    cv::Point2d maxDistance(0,0);
+    cv::Scalar cSum;
+    for (PixelObject* po : Object::pixelObjects){
+        this->centroid += po->get_gps_centroid();
+        this->area += po->get_gps_area();
+        cSum += po->get_colour();
+
+        if (sqrt(pow(maxDistance.x,2) + pow(maxDistance.y,2)) <
+        sqrt(pow(po->get_gps_centroid().x,2) + pow(po->get_gps_centroid().y,2))){
+            maxDistance = po->get_gps_centroid();
+        }
+        //TODO: Determine image quality, choose best image
+
+    }
+    this->centroid /= n;
+    this->colour = cSum/n;
+
+    this->error = maxDistance - this->centroid;
+    this->errorAngle = atan2(this->centroid.y - maxDistance.y, this->centroid.x - maxDistance.x);
+}
+
 const std::vector<PixelObject*>& Object::get_pobjects(){
     return pixelObjects; 
 }

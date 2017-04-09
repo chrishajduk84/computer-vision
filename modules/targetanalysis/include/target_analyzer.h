@@ -38,11 +38,6 @@
 #include <math.h>
 #include <vector>
 
-//Macros and Definitions
-#define DEG2RAD(deg) (deg*180.0/M_PI)
-#define RAD2DEG(rad) (rad*M_PI/180.0)
-#define EARTH_RADIUS 6371000
-
 //Classes
 
 /**

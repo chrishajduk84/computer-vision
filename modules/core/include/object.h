@@ -2,30 +2,28 @@
  * @file object.h
  * @author WARG
  *
- * @section LICENSE
- *
- *  Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
- *  All rights reserved.
- *
- *  This software is licensed under a modified version of the BSD 3 clause license
- *  that should have been included with this software in a file called COPYING.txt
- *  Otherwise it is available at:
- *  https://raw.githubusercontent.com/UWARG/computer-vision/master/COPYING.txt
- */
-
-
-#ifndef OBJECT_H_INCLUDED
-#define OBJECT_H_INCLUDED
-
-/**
- * @class Object
- *
  * @brief Container class for storing information about
  *     identified targets in real-world measurements
  *     Adding PixelObjects consolidates their information
  *     into the Object
  *
+ * @section LICENSE
+ *
+ *  Copyright (c) 2015-2017, Waterloo Aerial Robotics Group (WARG)
+ *  All rights reserved.
+ *
+ *  This software is licensed under a modified version of the BSD 3
+ *  clause license
+ *  that should have been included with this software in a file called
+ *  COPYING.txt
+ *  Otherwise it is available at:
+ *  https://raw.githubusercontent.com/UWARG/computer-vision/master/COPYING.txt
  */
+
+
+
+#ifndef OBJECT_H_INCLUDED
+#define OBJECT_H_INCLUDED
 
 #include <opencv2/core/core.hpp>
 #include <vector>
@@ -55,7 +53,7 @@ public:
      *
      * @return GPS co-ordinates of the Object
      */
-    cv::Point2f get_centroid();
+    cv::Point2d get_centroid();
 
     /**
      * @brief Getter for area
@@ -83,7 +81,7 @@ public:
      *
      * @return 2D error magnitude of the Object's location in metres
      */
-    cv::Point2f get_error();
+    cv::Point2d get_error();
 
     /**
      * @brief Getter for error angle
@@ -91,32 +89,6 @@ public:
      * @return Angle in radians between the direction of the error and North
      */
     double get_error_angle();
-
-    /**
-     * @brief Getter for the pixel distance
-     *
-     * @return The distance covered by each pixel of the image in the X and Y
-     * directions.
-     */
-    cv::Point2d get_pixel_distance(); 
-
-    /**
-     * @brief Setter for the pixel distance
-     *
-     * @param The distance covered by each pixel of the image in the X and Y
-     * directions.
-     */
-    void set_pixel_distance(cv::Point2d); 
-
-    /**
-     * @brief Setter for the pixel distance
-     *
-     * @param The distance covered by each pixel of the image in the X direction.
-     * @param The distance covered by each pixel of the image in the Y
-     * direction.
-     */
-    void set_pixel_distance(double x, double y); 
-
 
     /**
      * @brief Adds given PixelObject to Object's storage
@@ -133,6 +105,16 @@ public:
      *         create this instance of Object
      */
     const std::vector<PixelObject *> & get_pobjects();
+
+
+     /**
+     * @brief Updates Object parameters based on the PixelObjects contained
+     * within it. For now this includes calculating the average
+     * positions/colours/areas with potential error
+     *
+     */ 
+    void update();
+
 private:
 
     /**
@@ -153,7 +135,7 @@ private:
     /**
      * @brief GPS co-ordinates of the centre of the Object
      */
-    cv::Point2f centroid;
+    cv::Point2d centroid;
 
     /**
      * @brief area of the target in square metres
@@ -173,7 +155,7 @@ private:
     /**
      * @brief Calculated location error of the target as a 2D rectangle in metres
      */
-    cv::Point2f error;
+    cv::Point2d error;
 
     /**
      * @brief Angle of the error as degrees clockwise from North

@@ -64,42 +64,11 @@ void TargetAnalyzer::getGPSCentroid(cv::Point2d point){
 
 }
 
-void TargetAnalyzer::getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
-double altitude, double heading, cv::Mat* img, Object* o){
-    //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
-    double cameraX = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
-    double cameraY = altitude * tan(cameraAlpha.y); //meters from center of photo to edge
-    
-    //Haversine formula - rearranged
-    //Note: These are false coordinates, as they still need to be rotated (with
-    //a rotation matrix)
-    double cameraXEdge = acos(1 - (1 -
-    cos(cameraX/EARTH_RADIUS))/(cos(DEG2RAD(latitude))*cos(DEG2RAD(latitude)))) +
-    longitude;
-    double cameraYEdge = cameraY/EARTH_RADIUS + latitude;
-
-
-    //Rotation Matrix - Heading
-    //Note: The '-heading' compensates for the fact that directional heading is
-    //a clockwise quantity, but cos(theta) assumes theta is a counterclockwise
-    //quantity.
-    double realX = cos(DEG2RAD(-heading)) * cameraXEdge - sin(DEG2RAD(-heading)) *
-    cameraYEdge;
-    double realY = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
-    cameraYEdge;
-
-    double unitX = realX/img->cols;
-    double unitY = realY/img->rows;
-
-    //o->set_pixel_distance(unitX,unitY);  UNDEFINED FOR THE TIME BEING - ADD TO Object.cpp
-
-
-    //For future thought: THIS IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
+   //For future thought: GPS GEOLOCATION IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
     //HEADING??? We use GPS Heading, but the wind can alter this by upto
     //30degreesC
     //This code assumes the top of the image is also pointing towards the heading
     //measured by the aircraft
-}
 
    //Run functions to determine probability of the image displaying a duplicate based on visual, telemetry data.
     //Things to consider for the future:

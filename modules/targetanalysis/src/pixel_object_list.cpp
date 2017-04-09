@@ -53,6 +53,7 @@ void PixelObjectList::addNode(PixelObject* po){
     newNode->o = newObject;
         
     newNode->o->add_pobject(po);
+    newNode->o->update();
     newNode->next = 0; //Nullify pointer (Since there is no next list item)
 
     //Update old node with the new node
@@ -90,6 +91,74 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
     return 0;
 }
 
+double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
+    //Calculations assume ideal scenario (no tilt in photos)
+    Frame* f = po1->get_image();
+    
+
+    //FINISH
+        
+}
+
+cv::Point2d* PixelObjectList::getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
+Frame* f){
+    const Metadata* m = f->get_metadata();
+    cv::Mat img = f->get_img();
+    int h = img.cols;
+    int w = img.rows;
+    cv::Point2d imgCenter(w/2, h/2);
+    
+    //(0,0) is in the center of the image
+    cv::Point2d biasedPoint = point - imgCenter;
+
+    double altitude = m->altitude;
+    double heading = m->heading;
+    double latitude = m->lat;
+    double longitude = m->lon;
+
+    //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
+    double cameraXEdge = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
+    double cameraYEdge = altitude * tan(cameraAlpha.y); //meters from center of photo to edge
+
+    //Rotation Matrix - Heading
+    //Note: The '-heading' compensates for the fact that directional heading is
+    //a clockwise quantity, but cos(theta) assumes theta is a counterclockwise
+    //quantity.
+    double realXEdge = cos(DEG2RAD(-heading)) * cameraXEdge - sin(DEG2RAD(-heading)) *
+    cameraYEdge;
+    double realYEdge = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
+    cameraYEdge;
+
+    double realX = cos(DEG2RAD(-heading)) * biasedPoint.x - sin(DEG2RAD(-heading)) *
+    biasedPoint.y;
+    double realY = sin(DEG2RAD(-heading)) * biasedPoint.x + cos(DEG2RAD(-heading)) *
+    biasedPoint.y;
+
+
+    //Haversine formula - rearranged
+    //Note: These are false coordinates, as they still need to be rotated (with
+    //a rotation matrix)
+    double lon = acos(1 - (1 -
+    cos(realX/EARTH_RADIUS))/(cos(DEG2RAD(latitude))*cos(DEG2RAD(latitude)))) +
+    longitude;
+    double lat = realY/EARTH_RADIUS + latitude;
+
+
+    double unitX = realXEdge/img.cols;
+    double unitY = realYEdge/img.rows;
+
+    f->set_pixel_distance(unitX,unitY);  
+
+    //Dynamic Allocation - THIS NEEDS TO BE DEALLOCATED, OTHERWISE A MEMORY LEAK
+    //WILL OCCUR
+    cv::Point2d* gl = new cv::Point2d(lat, lon);
+
+    return gl;
+
+}
+
+
+//TODO: ADD OPTION TO ONLY LOOK AT PREDEFINED SHAPES
 double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
     const vector<PixelObject*>& poList = o2->get_pobjects();
         
@@ -222,7 +291,8 @@ void PixelObjectList::addAndCompare(PixelObject* po){
         //The add_pobject function should also recalculate all parameters of the
         //object.
         listMatch[iMax].node->o->add_pobject(po);
-    }
+        listMatch[iMax].node->o->update();
+   }
     else{
         //Add the node to the end of the list for future comparisons
         //Note, that objects that have already matched are not included for
