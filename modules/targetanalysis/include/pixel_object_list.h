@@ -23,8 +23,8 @@
 #include <vector>
 
 //Macros and Definitions
-#define DEG2RAD(deg) (deg*180.0/M_PI)
-#define RAD2DEG(rad) (rad*M_PI/180.0)
+#define RAD2DEG(rad) ((rad)*180.0/M_PI)
+#define DEG2RAD(deg) ((deg)*M_PI/180.0)
 #define EARTH_RADIUS 6371000
 
 /**
@@ -184,8 +184,8 @@ public:
      * @return A Point, where the first value is the latitude and the second is
      * the longitude.
      */
-    cv::Point2d* getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
-Frame* f);
+    int getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
+Frame* f, cv::Point2d* returnResult);
 
     /*
      * compareContours(PixelObject* po1, Object* o2) compares the visual outline

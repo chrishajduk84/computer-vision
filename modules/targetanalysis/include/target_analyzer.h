@@ -141,6 +141,16 @@ double altitude, double heading, cv::Mat* img, Object* o);
         void getGPSCentroid(cv::Point2d point);
         
         /*
+         * @brief getGPSDistance() calculates the distance between two GPS coordinates in meters.
+         * @param lat1 the latitude of the first point
+         * @param lon1 the longitude of the first point
+         * @param lat2 the latitude of the second point
+         * @param lon2 the longitude of the second point
+         * @return the distance in meters between the two GPS coordinates.
+         */
+        double getGPSDistance(double lat1, double lon1, double lat2, double lon2);
+
+        /*
          * extract_objects() provides a list of unique objects that have been
          * identified, where the non-unique ones have been grouped.
          * @return the vector of Objects with identifies the unique ones found.

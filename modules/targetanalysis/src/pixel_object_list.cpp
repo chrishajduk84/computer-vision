@@ -94,18 +94,23 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
 double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
     //Calculations assume ideal scenario (no tilt in photos)
     Frame* f = po1->get_image();
-    
+        
 
     //FINISH
         
 }
 
-cv::Point2d* PixelObjectList::getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
-Frame* f){
+int PixelObjectList::getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
+Frame* f, cv::Point2d* returnResult){
     const Metadata* m = f->get_metadata();
     cv::Mat img = f->get_img();
     int h = img.cols;
     int w = img.rows;
+    
+    if (w <= 0 || h <= 0){ 
+        return 0;
+    }
+
     cv::Point2d imgCenter(w/2, h/2);
     
     //(0,0) is in the center of the image
@@ -117,8 +122,8 @@ Frame* f){
     double longitude = m->lon;
 
     //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
-    double cameraXEdge = altitude * tan(cameraAlpha.x); //meters from center of photo to edge
-    double cameraYEdge = altitude * tan(cameraAlpha.y); //meters from center of photo to edge
+    double cameraXEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.x)); //meters from center of photo to edge
+    double cameraYEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.y)); //meters from center of photo to edge
 
     //Rotation Matrix - Heading
     //Note: The '-heading' compensates for the fact that directional heading is
@@ -129,31 +134,25 @@ Frame* f){
     double realYEdge = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
     cameraYEdge;
 
-    double realX = cos(DEG2RAD(-heading)) * biasedPoint.x - sin(DEG2RAD(-heading)) *
-    biasedPoint.y;
-    double realY = sin(DEG2RAD(-heading)) * biasedPoint.x + cos(DEG2RAD(-heading)) *
-    biasedPoint.y;
-
-
+    double realX = cos(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge - sin(DEG2RAD(-heading)) *
+    biasedPoint.y/(h/2)*cameraYEdge;
+    double realY = sin(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge + cos(DEG2RAD(-heading)) *
+    biasedPoint.y/(h/2)*cameraYEdge;
+    
     //Haversine formula - rearranged
     //Note: These are false coordinates, as they still need to be rotated (with
     //a rotation matrix)
-    double lon = acos(1 - (1 -
-    cos(realX/EARTH_RADIUS))/(cos(DEG2RAD(latitude))*cos(DEG2RAD(latitude)))) +
-    longitude;
-    double lat = realY/EARTH_RADIUS + latitude;
-
+    //double lon = acos(1 - (1 - cos(realX/EARTH_RADIUS))/(cos(DEG2RAD(latitude))*cos(DEG2RAD(latitude)))) + longitude;
+    //double lat = realY/EARTH_RADIUS + latitude;
+    double lon = RAD2DEG(realX/EARTH_RADIUS)/cos(DEG2RAD(latitude)) + longitude;
+    double lat = RAD2DEG(realY/EARTH_RADIUS) + latitude;
 
     double unitX = realXEdge/img.cols;
     double unitY = realYEdge/img.rows;
 
-    f->set_pixel_distance(unitX,unitY);  
-
-    //Dynamic Allocation - THIS NEEDS TO BE DEALLOCATED, OTHERWISE A MEMORY LEAK
-    //WILL OCCUR
-    cv::Point2d* gl = new cv::Point2d(lat, lon);
-
-    return gl;
+    f->set_pixel_distance(unitX,unitY);    
+    *returnResult = cv::Point2d(lat,lon);
+    return 1;
 
 }
 

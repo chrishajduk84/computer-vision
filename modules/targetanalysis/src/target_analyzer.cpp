@@ -64,6 +64,22 @@ void TargetAnalyzer::getGPSCentroid(cv::Point2d point){
 
 }
 
+double TargetAnalyzer::getGPSDistance(double lat1, double lon1, double lat2, double lon2){
+    double dLat = DEG2RAD(lat2 - lat1);
+    double dLon = DEG2RAD(lon2 - lon1);
+
+    float a = sin(dLat / 2) * sin(dLat / 2) + cos(DEG2RAD(lat1)) * cos(DEG2RAD(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+
+    /*if ((dLat >= 0 && dLon >=0)||(dLat < 0 && dLon < 0)){*/
+        return EARTH_RADIUS * (2 * atan2(sqrt(a),sqrt(1 - a)));
+    /*}*/
+    /*else {
+        return EARTH_RADIUS * (2 * atan2(sqrt(a),sqrt(1 - a))) * -1;
+    }*/
+
+}
+
+
    //For future thought: GPS GEOLOCATION IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
     //HEADING??? We use GPS Heading, but the wind can alter this by upto
     //30degreesC
