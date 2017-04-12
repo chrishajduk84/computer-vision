@@ -74,6 +74,13 @@ public:
     cv::Point2d get_gps_centroid();
 
     /**
+     * @brief Setter for GPS centroid
+     *
+     * @param gps The GPS centroid of the Object in its frame
+     */
+    void set_gps_centroid(cv::Point2d gps);
+
+    /**
      * @brief Getter for area
      *
      * @return Area of the Object in meters

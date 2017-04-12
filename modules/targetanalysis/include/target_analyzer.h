@@ -151,6 +151,14 @@ double altitude, double heading, cv::Mat* img, Object* o);
         double getGPSDistance(double lat1, double lon1, double lat2, double lon2);
 
         /*
+         * @brief getGPSDistance() calculates the distance between two GPS coordinates in meters.
+         * @param gps1 the gps coordinates of the first point
+         * @param gps2 the gps coordinates of the second point
+         * @return the distance in meters between the two GPS coordinates.
+         */
+        double getGPSDistance(cv::Point2d gps1, cv::Point2d gps2); 
+
+        /*
          * extract_objects() provides a list of unique objects that have been
          * identified, where the non-unique ones have been grouped.
          * @return the vector of Objects with identifies the unique ones found.

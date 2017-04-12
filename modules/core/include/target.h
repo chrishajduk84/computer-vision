@@ -116,15 +116,6 @@ public:
      */
     const std::vector<Object *> & get_objects();
 
-    /**
-     * @brief Setter for the pixel distance.
-     *
-     * @param x The distance covered by each pixel of the image in the X.
-     * @param y The distance covered by each pixel of the image in the Y.
-     */
-    void set_pixel_distance(double x, double y);
-    void set_pixel_distance(cv::Point2d);
-
 private:
 
     /**
@@ -147,13 +138,6 @@ private:
      */
     cv::Point2d centroid;
     
-    /**
-     * @brief Distance covered by each pixel in the original target image
-     * (non-cropped). Each pixel is measured in terms of meters.
-     */
-    cv::Point2d pixelDistance;
-
-
     /**
      * @brief area of the target in square metres
      */

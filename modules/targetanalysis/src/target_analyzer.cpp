@@ -79,7 +79,9 @@ double TargetAnalyzer::getGPSDistance(double lat1, double lon1, double lat2, dou
 
 }
 
-
+double TargetAnalyzer::getGPSDistance(cv::Point2d gps1, cv::Point2d gps2){
+    return getGPSDistance(gps1.x, gps1.y, gps2.x, gps2.y);
+}
    //For future thought: GPS GEOLOCATION IS THE LEAST RELIABLE PART, WHAT IS THE ACTUAL
     //HEADING??? We use GPS Heading, but the wind can alter this by upto
     //30degreesC

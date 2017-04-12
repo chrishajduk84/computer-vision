@@ -77,14 +77,16 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
             ".jpeg")){
                 
                 //Manually generate a PixelObject
-                cv::Mat img = imread(current_file, CV_LOAD_IMAGE_UNCHANGED);
-                Frame f(&img, current_file, Metadata()); //Blank Metadata, Blank Timestamp
+                cv::Mat* img = new cv::Mat(imread(current_file,CV_LOAD_IMAGE_UNCHANGED));
+                Metadata meta;
+                meta.lat=49.9118449998;meta.lon=-98.26867;meta.time=215410.5+numImage;meta.pitch=-6.8860778809;meta.roll=-10.4903907776;meta.pitchRate=-0.0558875017;meta.rollRate=0.0036246777;meta.yawRate=0.0214070547;meta.altitude=-1.375;meta.heading=175;
+                Frame* f = new Frame(img, current_file, meta);
 
                 //Generate Contour
                 ObjectDetector detector(filter, ccreator);
-                detector.process_frame(&f);
+                detector.process_frame(f);
                 vector<Point> results;
-                for (PixelObject * o : f.get_objects()) {
+                for (PixelObject * o : f->get_objects()) {
                                        
                     vector<cv::Point> contour = results;//{cv::Point(0,0),cv::Point(0,1),cv::Point(1,1),cv::Point(1,0)};
                     /*
@@ -138,13 +140,4 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
         }
         i++;
     }
-    
-/*
-    //Cleanup
-    delete filter;
-    delete ccreator;
-    for (int i = 0; i < numPixelObjects; i++){
-        delete pointerList[i];
-    }
-    */
 }

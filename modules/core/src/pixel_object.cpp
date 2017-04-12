@@ -47,6 +47,10 @@ cv::Point2d PixelObject::get_gps_centroid(){
     return gps_centroid;
 }
 
+void PixelObject::set_gps_centroid(cv::Point2d gps){
+    gps_centroid = gps;
+}
+
 double PixelObject::get_gps_area(){
     return gps_area;
 }
