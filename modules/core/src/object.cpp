@@ -29,6 +29,10 @@ cv::Point2d Object::get_centroid(){
     return centroid;
 }
 
+cv::Scalar Object::get_colour(){
+    return colour;
+}
+
 void Object::update(){
     int n = Object::pixelObjects.size();
     this->centroid = cv::Point2d(0,0);

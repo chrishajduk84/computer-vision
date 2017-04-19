@@ -78,18 +78,32 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
     //Contour/Shape, followed by Colour
         
     double gps = compareGPS(po1, o2);
-BOOST_LOG_TRIVIAL(info) << "GPS comparison: " << gps;
     if (gps > GPS_THRESHOLD){
         double visual = compareContours(po1, o2);
         if (visual > VISUAL_THRESHOLD){
-            //double colour = compareColour(po1, o2);
-            //if (colour > COLOUR_THRESHOLD){
-            //  return gps*visual*colour;
-            //}
-            return (gps + GPS_THRESHOLD_BIAS)*(visual + VISUAL_THRESHOLD_BIAS); //Temporary return statement while I get all the other algorithms working
+            double colour = compareColour(po1, o2);
+            if (colour > COLOUR_THRESHOLD){
+                return (gps + GPS_THRESHOLD_BIAS)*(visual +
+                VISUAL_THRESHOLD_BIAS)*(colour + COLOUR_THRESHOLD_BIAS); //Temporary return statement while I get all the other algorithms working
+            }
         }
     }
     return 0;
+}
+
+double PixelObjectList::compareColour(PixelObject* po1, Object* o2){
+    cv::Scalar a = po1->get_colour();
+    cv::Scalar b = o2->get_colour();
+    double* aArr = a.val;
+    double* bArr = b.val;
+
+    double euclideanDistance = sqrt(pow(aArr[0] - bArr[0],2) + pow(aArr[1] -
+    bArr[1],2) + pow(aArr[2] - bArr[2],2));
+
+    BOOST_LOG_TRIVIAL(debug) << "COLOUR:" << 1 - euclideanDistance/sqrt(3*pow(255,2));
+
+
+    return 1 - euclideanDistance/sqrt(3*pow(255,2));
 }
 
 double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
@@ -102,10 +116,7 @@ double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
         return 0;
     }
     po1->set_gps_centroid(result);
-    BOOST_LOG_TRIVIAL(debug) << result;
-    BOOST_LOG_TRIVIAL(debug) << o2->get_centroid();
     double distance = TargetAnalyzer::getInstance()->getGPSDistance(result, o2->get_centroid());
-    BOOST_LOG_TRIVIAL(debug) << distance;
     if (distance < 1){
         distance = 1; //Prevent zero division
     }

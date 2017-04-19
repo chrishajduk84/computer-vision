@@ -116,6 +116,14 @@ private:
     double GPS_THRESHOLD;
 
     /*
+     * COLOUR_THRESHOLD determines how similar two pixel object colours must be inorder
+     * to be designated a 'duplicate'. This is based on a relative RGB scale,
+     * where White and Black are the polar opposites and would be designated a 0
+     * (based on a euclidean RGB distance).
+     */
+    double COLOUR_THRESHOLD;
+
+    /*
      * GPS_THRESHOLD_BIAS determines how important GPS similarity is in
      * comparison to VISUAL and COLOR parameters. This value is applied AFTER it matches
      * the original GPS_THRESHOLD.
@@ -128,6 +136,13 @@ private:
      * the original VISUAL_THRESHOLD.
      */
     double VISUAL_THRESHOLD_BIAS;    
+   
+    /*
+     * COLOUR_THRESHOLD_BIAS determines how important colour similarity is in
+     * comparison to GPS and visual/physical parameters. This value is applied AFTER it matches
+     * the original COLOUR_THRESHOLD.
+     */
+    double COLOUR_THRESHOLD_BIAS;    
 
     /*
      * Constructor for PixelObjectList
@@ -135,8 +150,9 @@ private:
      * This is a private constructor due to the singleton instance. Use
      * getInstance(), to get or make a new PixelObjectList.
      */
-    PixelObjectList(){GPS_THRESHOLD = 0.1; VISUAL_THRESHOLD = 0.8;
-    GPS_THRESHOLD_BIAS = 0.5; VISUAL_THRESHOLD_BIAS = 0; COMPARE_AREA = 400;};
+    PixelObjectList(){GPS_THRESHOLD = 0.1; VISUAL_THRESHOLD = 0.6;
+    COLOUR_THRESHOLD = 0.9; GPS_THRESHOLD_BIAS = 0.5; VISUAL_THRESHOLD_BIAS = 0.1;
+    COLOUR_THRESHOLD_BIAS = 0; COMPARE_AREA = 400;};
 
     /*
      * Private operator assignment to prevent mismanagement of singleton
