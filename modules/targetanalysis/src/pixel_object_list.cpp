@@ -76,15 +76,16 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
     //Compare Pixel Objects based on Metadata and visual queues
     //Uses Hierarchical Structure: GPS data is most important, followed by
     //Contour/Shape, followed by Colour
-        
+    TargetAnalyzer* ta = TargetAnalyzer::getInstance();
+    using TA = TargetAnalyzer; 
     double gps = compareGPS(po1, o2);
-    if (gps > GPS_THRESHOLD){
+    if (gps > ta->get_threshold(TA::GPS)){
         double visual = compareContours(po1, o2);
-        if (visual > VISUAL_THRESHOLD){
+        if (visual > ta->get_threshold(TA::CONTOUR)){
             double colour = compareColour(po1, o2);
-            if (colour > COLOUR_THRESHOLD){
-                return (gps + GPS_THRESHOLD_BIAS)*(visual +
-                VISUAL_THRESHOLD_BIAS)*(colour + COLOUR_THRESHOLD_BIAS); //Temporary return statement while I get all the other algorithms working
+            if (colour > ta->get_threshold(TA::COLOUR)){
+                return (gps + ta->get_threshold_bias(TA::GPS))*(visual +
+                ta->get_threshold_bias(TA::CONTOUR))*(colour + ta->get_threshold_bias(TA::COLOUR)); 
             }
         }
     }
@@ -99,9 +100,6 @@ double PixelObjectList::compareColour(PixelObject* po1, Object* o2){
 
     double euclideanDistance = sqrt(pow(aArr[0] - bArr[0],2) + pow(aArr[1] -
     bArr[1],2) + pow(aArr[2] - bArr[2],2));
-
-    BOOST_LOG_TRIVIAL(debug) << "COLOUR:" << 1 - euclideanDistance/sqrt(3*pow(255,2));
-
 
     return 1 - euclideanDistance/sqrt(3*pow(255,2));
 }
@@ -213,7 +211,7 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
         for (int interval = 0; interval < numIntervals; interval++){
             double theta = 2*M_PI/numIntervals * interval;
             BOOST_LOG_TRIVIAL(debug) << "theta: " << theta << ", aS2: " <<
-            areaScale2 << ", C2: " << c2 << endl;
+            areaScale2 << ", C2: " << c2;
 
             vector<cv::Point> tempVec;
             for (Point i : v2){
@@ -223,8 +221,6 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
             }    
             v2Mod.push_back(tempVec);
         }
-            
-        BOOST_LOG_TRIVIAL(debug) << v2Mod[0];
             
         float radius1, radius2;
         Point2f center1, center2;
@@ -300,9 +296,7 @@ void PixelObjectList::addAndCompare(PixelObject* po){
         tempPointer = tempPointer->next;
     }
     //Is the best match good enough - FUZZY LOGIC
-    //TODO: This should be a configurable value via a socket connection or a
-    //learning algorithm
-    if (maxSimilarity >= MATCH_THRESHOLD){
+    if (maxSimilarity >= TargetAnalyzer::getInstance()->get_threshold(TargetAnalyzer::MATCH)){
         //The add_pobject function should also recalculate all parameters of the
         //object.
         listMatch[iMax].node->o->add_pobject(po);

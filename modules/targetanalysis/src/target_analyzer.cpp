@@ -49,9 +49,26 @@ int TargetAnalyzer::get_unique_objects_length(){
     return pol->getListLength();
 }
 
+double TargetAnalyzer::get_threshold(AlgorithmNum an){
+    return THRESHOLD[an];
+}
+
+double TargetAnalyzer::get_threshold_bias(AlgorithmNum an){
+    return THRESHOLD_BIAS[an];
+}
+
+void TargetAnalyzer::set_threshold(AlgorithmNum an, double value){
+    THRESHOLD[an] = value;
+}
+
+void TargetAnalyzer::set_threshold_bias(AlgorithmNum an, double value){
+    THRESHOLD_BIAS[an] = value;
+}
+
+
 //Based on the GPS location of the image, calculates the
 //GPS location of a certain pixel in the image.
-void TargetAnalyzer::getGPSCentroid(cv::Point2d point){
+
 
 //Gets the GPS location of each corner of the image based on the center GPS
 //coordinate acquired by the GPS
@@ -61,8 +78,6 @@ void TargetAnalyzer::getGPSCentroid(cv::Point2d point){
 //TODO: Add compensation for roll and pitch angles. This should skew the
 //photo/gps grid. The lens profile may have a big effect here. See previous
 //todo.
-
-}
 
 double TargetAnalyzer::getGPSDistance(double lat1, double lon1, double lat2, double lon2){
     double dLat = DEG2RAD(lat2 - lat1);
