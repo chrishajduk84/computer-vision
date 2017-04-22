@@ -54,7 +54,6 @@ void PixelObjectList::addNode(PixelObject* po){
     newNode->o = newObject;
         
     newNode->o->add_pobject(po);
-    newNode->o->update();
     newNode->next = 0; //Nullify pointer (Since there is no next list item)
 
     //Update old node with the new node
@@ -108,7 +107,7 @@ double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
     //Calculations assume ideal scenario (no tilt in photos, no distortion)
     Frame* f = po1->get_image();
     cv::Point2d result(0,0);
-    if(!getGPS(po1->get_centroid(),cv::Point2d(69.5/2,125.3/2)/*getSettings()*/,f,&result)){
+    if(!TargetAnalyzer::getInstance()->getGPS(po1->get_centroid(),cv::Point2d(69.5/2,125.3/2)/*getSettings()*/,f,&result)){
         //If there is something wrong with the GPS coordinates, its not a valid
         //match
         return 0;
@@ -120,57 +119,6 @@ double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
     }
     return 1.0/distance; //As you get farther away, probability of the target being the same decreases.       
 }
-
-int PixelObjectList::getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
-Frame* f, cv::Point2d* returnResult){
-    const Metadata* m = f->get_metadata();
-    cv::Mat img = f->get_img();
-    int h = img.cols;
-    int w = img.rows;
-    
-    if (w <= 0 || h <= 0){ 
-        return 0;
-    }
-
-    cv::Point2d imgCenter(w/2, h/2);
-    
-    //(0,0) is in the center of the image
-    cv::Point2d biasedPoint = point - imgCenter;
-
-    double altitude = m->altitude;
-    double heading = m->heading;
-    double latitude = m->lat;
-    double longitude = m->lon;
-
-    //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
-    double cameraXEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.x)); //meters from center of photo to edge
-    double cameraYEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.y)); //meters from center of photo to edge
-
-    //Rotation Matrix - Heading
-    //Note: The '-heading' compensates for the fact that directional heading is
-    //a clockwise quantity, but cos(theta) assumes theta is a counterclockwise
-    //quantity.
-    double realXEdge = cos(DEG2RAD(-heading)) * cameraXEdge - sin(DEG2RAD(-heading)) *
-    cameraYEdge;
-    double realYEdge = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
-    cameraYEdge;
-
-    double realX = cos(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge - sin(DEG2RAD(-heading)) *
-    biasedPoint.y/(h/2)*cameraYEdge;
-    double realY = sin(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge + cos(DEG2RAD(-heading)) *
-    biasedPoint.y/(h/2)*cameraYEdge;
-   
-    double lon = RAD2DEG(realX/EARTH_RADIUS)/cos(DEG2RAD(latitude)) + longitude;
-    double lat = RAD2DEG(realY/EARTH_RADIUS) + latitude;
-
-    double unitX = realXEdge/img.cols;
-    double unitY = realYEdge/img.rows;
-
-    f->set_pixel_distance(unitX,unitY);    
-    *returnResult = cv::Point2d(lat,lon);
-    return 1;
-}
-
 
 //TODO: ADD OPTION TO ONLY LOOK AT PREDEFINED SHAPES
 double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
@@ -300,8 +248,7 @@ void PixelObjectList::addAndCompare(PixelObject* po){
         //The add_pobject function should also recalculate all parameters of the
         //object.
         listMatch[iMax].node->o->add_pobject(po);
-        listMatch[iMax].node->o->update();
-   }
+    }
     else{
         //Add the node to the end of the list for future comparisons
         //Note, that objects that have already matched are not included for

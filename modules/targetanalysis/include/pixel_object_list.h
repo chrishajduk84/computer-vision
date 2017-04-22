@@ -108,7 +108,49 @@ private:
      * getInstance(), to get or make a new PixelObjectList.
      */
     PixelObjectList(){COMPARE_AREA = 400;};
+    
+    /*
+     * addNode(PixelObject* o) adds a new unique node to the end of the PixelObjectList.
+     * @param o the pixelobject that is converted to an object and added to the
+     * list.
+     */
+    void addNode(PixelObject* o);
 
+    /*
+     * compareGPS(PixelObject* po1, Object* o2) compares the GPS position of
+     * object based on their proximity to one another.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have unique parameter in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */
+    double compareGPS(PixelObject* po1, Object* o2);
+    
+    /*
+     * compareColour(PixelObject* po1, Object* o2) compares the average colour value
+     * of an object based on previous objects and the criteria for what
+     * potential colour may be within the scope of detection.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have a unique colour in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */
+    double compareColour(PixelObject* po1, Object* o2);
+
+    /*
+     * compareContours(PixelObject* po1, Object* o2) compares the visual outline
+     * of an object based on the similarity of the shape and overlap of both
+     * objects.
+     * @param po1 the pixel object which is being judged and compared against
+     * already processed objects.
+     * @param o2 the object which has been deemed to have unique contours in
+     * comparison to all other previous objects.
+     * @return the result from 0 to 1, based on the similarity of the PO and O.
+     */ 
+    double compareContours(PixelObject* po1, Object* o2);
+    
     /*
      * Private operator assignment to prevent mismanagement of singleton
      * instance.
@@ -138,13 +180,6 @@ public:
     }
 
     /*
-     * addNode(PixelObject* o) adds a new unique node to the end of the PixelObjectList.
-     * @param o the pixelobject that is converted to an object and added to the
-     * list.
-     */
-    void addNode(PixelObject* o);
-
-    /*
      * compareNode(PixelObject* po1, Object* o2) compares po1 to the
      * pixelobjects within o2, however many they may be.
      * @param po1 the pixel object which is being judged and compared against
@@ -154,56 +189,6 @@ public:
      * @return the result from 0 to 1, based on the similarity of the PO and O.
      */
     double compareNode(PixelObject* po1, Object* o2);
-    
-    /*
-     * compareGPS(PixelObject* po1, Object* o2) compares the GPS position of
-     * object based on their proximity to one another.
-     * @param po1 the pixel object which is being judged and compared against
-     * already processed objects.
-     * @param o2 the object which has been deemed to have unique parameter in
-     * comparison to all other previous objects.
-     * @return the result from 0 to 1, based on the similarity of the PO and O.
-     */
-    double compareGPS(PixelObject* po1, Object* o2);
-
-    /*
-     * getGPS(...) calculates the GPS coordinates (latitude, longitude) of a
-     * specific point in a frame.
-     * @param point the point at which the latitude and longitude should be
-     * determined at.
-     * @param cameraAlpha the alpha angle of the lens of the camera. This
-     * defines how much can be seen and what effect altitude has on the image
-     * scaling.
-     * @param f the frame for which the point is calculated for.
-     * @return A Point, where the first value is the latitude and the second is
-     * the longitude.
-     */
-    int getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
-Frame* f, cv::Point2d* returnResult);
-
-    /*
-     * compareContours(PixelObject* po1, Object* o2) compares the visual outline
-     * of an object based on the similarity of the shape and overlap of both
-     * objects.
-     * @param po1 the pixel object which is being judged and compared against
-     * already processed objects.
-     * @param o2 the object which has been deemed to have unique contours in
-     * comparison to all other previous objects.
-     * @return the result from 0 to 1, based on the similarity of the PO and O.
-     */ 
-    double compareContours(PixelObject* po1, Object* o2);
-    
-    /*
-     * compareColour(PixelObject* po1, Object* o2) compares the average colour value
-     * of an object based on previous objects and the criteria for what
-     * potential colour may be within the scope of detection.
-     * @param po1 the pixel object which is being judged and compared against
-     * already processed objects.
-     * @param o2 the object which has been deemed to have a unique colour in
-     * comparison to all other previous objects.
-     * @return the result from 0 to 1, based on the similarity of the PO and O.
-     */
-    double compareColour(PixelObject* po1, Object* o2);
     
     /*
      * addAndCompare(PixelObject* po) iterates the comparison over all known

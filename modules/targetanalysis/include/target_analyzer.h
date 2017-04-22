@@ -160,6 +160,19 @@ class TargetAnalyzer {
          * @param value the threshold_bias setting for the particular algorithm
          */
         void set_threshold_bias(AlgorithmNum an, double value); 
+        /*
+         * getGPS(...) calculates the GPS coordinates (latitude, longitude) of a
+         * specific point in a frame.
+         * @param point the point at which the latitude and longitude should be
+         * determined at.
+         * @param cameraAlpha the alpha angle of the lens of the camera. This
+         * defines how much can be seen and what effect altitude has on the image
+         * scaling.
+         * @param f the frame for which the point is calculated for.
+         * @return A Point, where the first value is the latitude and the second is
+         * the longitude.
+         */
+        int getGPS(cv::Point2d point, cv::Point2d cameraAlpha,Frame* f, cv::Point2d* returnResult);
 
 
         /*

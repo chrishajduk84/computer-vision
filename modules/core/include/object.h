@@ -2,10 +2,6 @@
  * @file object.h
  * @author WARG
  *
- * @brief Container class for storing information about
- *     identified targets in real-world measurements
- *     Adding PixelObjects consolidates their information
- *     into the Object
  *
  * @section LICENSE
  *
@@ -29,6 +25,14 @@
 #include <vector>
 
 class PixelObject;
+
+/*
+ * @class PixelObject
+ * @brief Container class for storing information about
+ *     identified targets in real-world measurements
+ *     Adding PixelObjects consolidates their information
+ *     into the Object
+ */ 
 
 class Object {
 public:
@@ -106,15 +110,6 @@ public:
      */
     const std::vector<PixelObject *> & get_pobjects();
 
-
-     /**
-     * @brief Updates Object parameters based on the PixelObjects contained
-     * within it. For now this includes calculating the average
-     * positions/colours/areas with potential error
-     *
-     */ 
-    void update();
-
 private:
 
     /**
@@ -167,6 +162,22 @@ private:
      * Each PixelObject is a specific instance of this Object
      */
     std::vector<PixelObject *> pixelObjects;
+
+     /**
+     * @brief Updates Object parameters based on the PixelObjects contained
+     * within it. For now this includes calculating the average
+     * positions/colours/areas with potential error
+     *
+     */ 
+    void update();
+
+    /**
+     * @brief Recalculates Object parameters based on the PixelObjects contained
+     * within it. For now this includes calculating the average
+     * positions/colours/areas with potential error
+     *
+     */ 
+    void recalculate();
 };
 
 
