@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
 
     //NEGATIVE CHECK - Check how many different targets there are
     int listLength = ta->get_unique_objects_length();
-    BOOST_CHECK(listLength == 57);
+    BOOST_CHECK(listLength == 42);
 
     //POSITIVE CHECK - Check how many targets got grouped together and how many
     //in each according to the predefined images => There should  be 3 grouped
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(UniquePOTest){
         BOOST_LOG_TRIVIAL(debug) << i << ": " << size;
         if (size > 1){
             //This is a little silly, something better should be made.
-            BOOST_CHECK_MESSAGE(size == 2 || size == 3 || size == 4, "Unexpected size");
+            BOOST_CHECK_MESSAGE(size <= 7, "Unexpected size");
         }
         i++;
     }

@@ -83,8 +83,7 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
         if (visual > ta->get_threshold(TA::CONTOUR)){
             double colour = compareColour(po1, o2);
             if (colour > ta->get_threshold(TA::COLOUR)){
-                return (gps + ta->get_threshold_bias(TA::GPS))*(visual +
-                ta->get_threshold_bias(TA::CONTOUR))*(colour + ta->get_threshold_bias(TA::COLOUR)); 
+                return (gps + ta->get_threshold_bias(TA::GPS))*(visual + ta->get_threshold_bias(TA::CONTOUR))*(colour + ta->get_threshold_bias(TA::COLOUR)); 
             }
         }
     }
@@ -120,8 +119,55 @@ double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
     return 1.0/distance; //As you get farther away, probability of the target being the same decreases.       
 }
 
-//TODO: ADD OPTION TO ONLY LOOK AT PREDEFINED SHAPES
+
 double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
+    //Compare width to length ratio, compare area to perimeter ratio, compare
+    //square area(widthxlength) to area.
+    double maxDiff = sqrt(5);
+    
+    vector<cv::Point> contour1 = po1->get_contour();
+    //Length is the larger dimension
+    cv::Rect r1 = cv::boundingRect(contour1);
+    double l1 = r1.height;
+    double w1 = r1.width;
+    //If length is not the larger dimension, switch the values
+    if (l1 < w1){
+        double temp = l1;
+        l1 = w1;
+        w1 = temp;
+    }
+    double w_l_ratio1 = w1/l1;
+    double a_p_ratio1 = po1->get_area()/po1->get_perimeter();
+    double sq_a_ratio1 = po1->get_area()/(l1*w1);
+
+    for (PixelObject* po2 : o2->get_pobjects()){
+        vector<cv::Point> contour2 = po2->get_contour();
+
+        cv::Rect r2 = cv::boundingRect(contour2);
+        double l2 = r2.height;
+        double w2 = r2.width;
+        if (l2 < w2){
+            double temp = l2;
+            l2 = w2;
+            w2 = temp;
+        } 
+        double w_l_ratio2 = w2/l2;
+        double a_p_ratio2 = po2->get_area()/po2->get_perimeter();
+        double sq_a_ratio2 = po2->get_area()/(l2*w2);
+
+        double diff = sqrt(pow((l1 - l2)/l1, 2) + pow((w1 - w2)/w2,2) +
+        pow((w_l_ratio1 - w_l_ratio2)/w_l_ratio1,2) + pow((a_p_ratio1 -
+        a_p_ratio2)/a_p_ratio1,2) + pow((sq_a_ratio1 -
+        sq_a_ratio2)/sq_a_ratio1,2)); //5-dimensions -> Max value is sqrt(5)
+
+        if (diff < maxDiff){
+            maxDiff = diff;
+        }
+    }
+    return 1 - maxDiff/sqrt(5);
+}
+
+/*double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
     const vector<PixelObject*>& poList = o2->get_pobjects();
         
     double maxSimilarity = 0;
@@ -201,7 +247,7 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
                     maxSimilarity = sim;
                     minimumContour = v2Mod[i];
                         
-                   /*//Visualization
+                  */ /*Visualization
                     if (sim > 0.7){
                         Mat drawing = Mat::zeros(matReference.x*2, matReference.y*2, CV_8UC3);
 
@@ -211,13 +257,13 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
                         namedWindow( "Duplicate Contours", CV_WINDOW_AUTOSIZE );
                         imshow( "Duplicate Contours", drawing );
                         waitKey(0);
-                    }*/   
+                    }*//*   
                 }
             }
         }
     } 
     return maxSimilarity;
-}
+}*/
 
 void PixelObjectList::addAndCompare(PixelObject* po){
     //Iterate over list

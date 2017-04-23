@@ -1,7 +1,7 @@
 /*
     This file is part of WARG's computer-vision
 
-    Copyright (c) 2015, Waterloo Aerial Robotics Group (WARG)
+    Copyright (c) 2015-2017, Waterloo Aerial Robotics Group (WARG)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
 
     boost::asio::io_service::work work(ioService);
     processors = boost::thread::hardware_concurrency();
-    
+
     while (!cin.eof()) handle_input();
 
     threadpool.join_all();
