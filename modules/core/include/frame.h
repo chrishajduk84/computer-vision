@@ -24,13 +24,15 @@
 #include <opencv2/core/core.hpp>
 #include "metadata.h"
 #include <vector>
+#include "camera.h"
 
 class PixelObject;
 
 class Frame{
 public:
-    Frame(cv::Mat * img, std::string id, Metadata m);
-    
+    Frame(cv::Mat * img, std::string id, Metadata m, Camera &camera);
+
+    ~Frame();
     /**
      * @brief 
      *
@@ -43,7 +45,13 @@ public:
      *
      * @return image associated with the frame
      */
-    cv::Mat & get_img(); 
+    cv::Mat & get_img();
+
+    /**
+     * @brief Original Image
+     * @return original image before any calibration
+     */
+    cv::Mat & orig_img();
 
     /**
      * @brief Adds given object to the list of objects in the frame
@@ -97,12 +105,25 @@ public:
      */
     void set_pixel_distance(double x, double y); 
 
+    /*
+     * @brief returns a new undistorted image using the given camera
+     * Intended for testing purposes, Does not modify the Frame.
+     * @param camera the camera to use for undistortion
+     * @return A new image that is the original image contained in this frame undistorted with the camera
+     */
+    cv::Mat* undistort(Camera &camera);
+
 private:
     
     /**
      * @brief image associated with the Frame 
      */
     cv::Mat * img;
+
+    /**
+     * @brief original image without undistortion
+     */
+    cv::Mat * origImg;
 
     /**
      * @brief Timestamp for the frame
@@ -119,11 +140,18 @@ private:
      */
     std::vector<PixelObject *> objects;
 
+<<<<<<< HEAD
     /**
      * @brief Distance of each pixel covers in the x and y direction with
      * componesation for altitude, camera lens, etc.
      */
     cv::Point2d pixel_distance; 
+=======
+    /*
+     * @brief Camera used to capture the frame
+     */
+    Camera &camera;
+>>>>>>> 7757b8909d05a2df51e4b260f0cf9b37010ecbba
 };
 
 
