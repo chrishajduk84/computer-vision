@@ -91,7 +91,8 @@ BOOST_AUTO_TEST_CASE(GPSHighAltitudePointTest){
                 //Skip first zero row
                 mi->next_metadata();
                 const Metadata m = mi->get_metadata(220649);
-                Frame* f = new Frame(img, current_file, m);
+                Camera cam = Camera::TestCamera();
+                Frame* f = new Frame(img, current_file, m, cam);
                 
                 longitude = m.lon;
                 latitude = m.lat;
@@ -189,7 +190,8 @@ BOOST_AUTO_TEST_CASE(GPSLowAltitudePointTest){
                 //Skip first zero row
                 mi->next_metadata();
                 const Metadata m = mi->next_metadata();
-                Frame* f = new Frame(img, current_file, m);
+                Camera cam = Camera::TestCamera();
+                Frame* f = new Frame(img, current_file, m, cam);
                 
                 longitude = m.lon;
                 latitude = m.lat;

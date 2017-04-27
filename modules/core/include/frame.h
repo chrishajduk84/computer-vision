@@ -140,18 +140,16 @@ private:
      */
     std::vector<PixelObject *> objects;
 
-<<<<<<< HEAD
     /**
      * @brief Distance of each pixel covers in the x and y direction with
      * componesation for altitude, camera lens, etc.
      */
     cv::Point2d pixel_distance; 
-=======
+
     /*
      * @brief Camera used to capture the frame
      */
     Camera &camera;
->>>>>>> 7757b8909d05a2df51e4b260f0cf9b37010ecbba
 };
 
 
