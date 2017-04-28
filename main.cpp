@@ -37,9 +37,24 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/algorithm/string.hpp>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/attributes/named_scope.hpp>
+
 #include <functional>
 #include <boost/program_options.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <queue>
 #include <chrono>
 #include <iostream>
@@ -55,18 +70,22 @@
 #include "metadata_reader.h"
 #include "target.h"
 #include "camera.h"
+#include "video_import.h"
+#include "pixel_object.h"
 
 using namespace std;
 using namespace boost;
 using namespace cv;
 namespace logging = boost::log;
 namespace po = boost::program_options;
+namespace sinks = boost::log::sinks;
+namespace keywords = boost::log::keywords;
+namespace expr = boost::log::expressions;
 
 Frame* next_image();
 int handle_args(int argc, char** argv);
 void handle_input();
 void handle_state_change();
-queue<Frame*> in_buffer;
 queue<Target*> out_buffer;
 queue<Frame*> intermediate_buffer;
 
@@ -78,6 +97,7 @@ int workers = 0;
 string outputDir = "./";
 bool intermediate = false;
 int processors;
+bool videoFeed = false;
 
 // Processing module classes
 Importer importer;
@@ -165,8 +185,7 @@ void worker(Frame* f) {
     workers++;
     assert(!f->get_img().empty());
     identifier.process_frame(f);
-    int poSize = f->get_objects().size();
-    if (intermediate && poSize > 0) {
+    if ((intermediate && f->get_objects().size() > 0) || videoFeed) {
         intermediate_buffer.push(f);
     }
     
@@ -190,7 +209,6 @@ void assign_workers() {
             // spawn worker to process image;
             BOOST_LOG_TRIVIAL(trace) << "Spawning worker...";
             ioService.post(boost::bind(worker, current));
-            in_buffer.pop();
         }
 
         boost::this_thread::sleep(boost::posix_time::milliseconds(aveFrameTime/processors));
@@ -211,7 +229,23 @@ void output() {
         }
         if (intermediate_buffer.size() > 0) {
             Frame * f = intermediate_buffer.front();
-            f->save(outputDir);
+            if (f->get_objects().size() > 0) {
+                f->save(outputDir);
+            }
+            if (videoFeed) {
+                Mat tmp = f->get_img().clone();
+                for (PixelObject *p : f->get_objects()) {
+                    vector<vector<Point> > contours;
+                    contours.push_back(p->get_contour());
+                    Scalar color(rand()&255, rand()&255, rand()&255);
+                    drawContours(tmp, contours, 0, color, FILLED, 8);
+                }
+                BOOST_LOG_TRIVIAL(debug) << "Displaying image: " << f->get_id();
+                Mat resized;
+                resize(tmp, resized, Size(((double)tmp.cols / tmp.rows) * 600, 600));
+                imshow("Live Feed", resized);
+                waitKey(1);
+            }
             intermediate_buffer.pop();
         }
         boost::this_thread::sleep(boost::posix_time::milliseconds(30));
@@ -219,11 +253,44 @@ void output() {
 }
 
 void init() {
-#ifdef RELEASE
-    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::error);
-#else
-    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::debug);
-#endif
+    /* init boost log
+     * 1. Add common attributes
+     * 2. set log filter to trace
+     */
+    boost::log::add_common_attributes();
+    boost::log::core::get()->add_global_attribute("Scope", boost::log::attributes::named_scope());
+    boost::log::core::get()->set_filter(
+        boost::log::trivial::severity >= boost::log::trivial::trace
+    );
+
+    /* log formatter:
+     * [TimeStamp] [ThreadId] [Severity Level] [Scope] Log message
+     */
+    auto fmtTimeStamp = boost::log::expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f");
+    auto fmtThreadId = boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID");
+    auto fmtSeverity = boost::log::expressions::attr<boost::log::trivial::severity_level>("Severity");
+    auto fmtScope = boost::log::expressions::format_named_scope("Scope",
+        boost::log::keywords::format = "%n(%f:%l)",
+        boost::log::keywords::iteration = boost::log::expressions::reverse,
+        boost::log::keywords::depth = 2);
+    boost::log::formatter logFmt =
+        boost::log::expressions::format("[%1%] (%2%) [%3%] [%4%] %5%")
+        % fmtTimeStamp % fmtThreadId % fmtSeverity % fmtScope
+        % boost::log::expressions::smessage;
+
+    /* console sink */
+    auto consoleSink = boost::log::add_console_log(std::clog);
+    consoleSink->set_formatter(logFmt);
+    consoleSink->set_filter(logging::trivial::severity >= logging::trivial::error);
+
+    /* fs sink */
+    auto fsSink = boost::log::add_file_log(
+        boost::log::keywords::file_name = "warg-cv_%Y-%m-%d_%H-%M-%S.%N.log",
+        boost::log::keywords::rotation_size = 10 * 1024 * 1024,
+        boost::log::keywords::min_free_space = 30 * 1024 * 1024,
+        boost::log::keywords::open_mode = std::ios_base::app);
+    fsSink->set_formatter(logFmt);
+    fsSink->locked_backend()->auto_flush(true);
 }
 
 int main(int argc, char** argv) {
@@ -277,6 +344,9 @@ vector<Command> commands = {
             cout << cmd.name << " " << boost::algorithm::join(cmd.args, " ") << space << " - " << cmd.desc << endl;
         }
     }),
+    Command("log.trace", "sets log level to info", {}, [](State &newState, vector<string> args) {
+        logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
+    }),
     Command("log.info", "sets log level to info", {}, [](State &newState, vector<string> args) {
         logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
     }),
@@ -304,15 +374,25 @@ vector<Command> commands = {
     }),
     Command("telemetry.file.add", "Adds file as new telemetry source", {"file"}, [=](State &newState, vector<string> args) {
         logReader->add_source(new MetadataReader(*logReader, args[0]));
+        newState.hasMetadataSource = true;
     }),
     Command("telemetry.network.add", "Adds network address/port as new telemetry source", {"address", "port"}, [=](State &newState, vector<string> args) {
         logReader->add_source(new MetadataReader(*logReader, args[0], args[1]));
+        newState.hasMetadataSource = true;
     }),
     Command("frames.source.pictures.add", "", {"path", "delay"}, [=](State &newState, vector<string> args) {
         if (logReader->num_sources() == 0) {
             BOOST_LOG_TRIVIAL(error) << "Cannot add image source until a metadata source has been specified";
         } else {
             importer.add_source(new PictureImport(args[0], logReader, goProFisheye), stol(args[1]));
+            newState.hasImageSource = true;
+        }
+    }),
+    Command("frames.source.videofile.add", "", {"path", "delay", "frameSkipMs"}, [=](State &newState, vector<string> args) {
+        if (logReader->num_sources() == 0) {
+            BOOST_LOG_TRIVIAL(error) << "Cannot add image source until a metadata source has been specified";
+        } else {
+            importer.add_source(new VideoImport(args[0], logReader, goProFisheye, stol(args[2])), stol(args[1]));
             newState.hasImageSource = true;
         }
     }),
@@ -327,8 +407,13 @@ vector<Command> commands = {
     }),
 #endif // HAS_DECKLINK
     Command("frames.source.remove", "Removes the source at the given index", {"index"}, [=](State &newState, vector<string> args) {
+        if (importer.num_sources() <= stoi(args[0])) throw new std::runtime_error(string("Not a valid index: ") + args[0]);
         importer.remove_source(stoi(args[0]));
         newState.hasImageSource = importer.num_sources() > 0;
+    }),
+    Command("frames.source.list", "Lists frame sources", {}, [=](State &newState, vector<string> args) {
+        cout << importer.source_descriptions() << endl;
+
     }),
     Command("frames.source.update_delay", "Updates the delay for the source at the given index", {"index", "delay"}, [=](State &newState, vector<string> args) {
         importer.update_delay(stoi(args[0]), stol(args[1]));
@@ -363,7 +448,12 @@ void handle_input() {
             if (args.size() - 1 == cmd.args.size()) {
                 BOOST_LOG_TRIVIAL(info) << "Executing command: " << cmd.name;
                 State newState = currentState;
-                cmd.execute(newState, vector<string>(args.begin() + 1, args.end()));
+                try {
+                    cmd.execute(newState, vector<string>(args.begin() + 1, args.end()));
+                } catch (std::exception * e) {
+                    BOOST_LOG_TRIVIAL(error) << e->what();
+                    delete e;
+                }
                 handle_state_change(newState);
                 valid = true;
                 break;
@@ -393,7 +483,9 @@ int handle_args(int argc, char** argv) {
             ("addr,a", po::value<string>(), "Address to connect to to recieve telemetry log")
             ("port,p", po::value<string>(), "Port to connect to to recieve telemetry log")
             ("output,o", po::value<string>(), "Directory to store output files; default is current directory")
-            ("intermediate", "When this is enabled, program will output intermediary frames that contain objects of interest");
+            ("intermediate", "When this is enabled, program will output intermediary frames that contain objects of interest")
+            ("videofile,f", po::value<string>(), "Path to video file to read frames from")
+            ("videofeed,l", "If set, proggram will display results in real time");
 
         po::variables_map vm;
         po::store(po::parse_command_line(argc, argv, description), vm);
@@ -433,12 +525,23 @@ int handle_args(int argc, char** argv) {
             cout << "Adding picture source..." << endl;
         }
 
+        if (vm.count("videofile")) {
+            string path = vm["videofile"].as<string>();
+            importer.add_source(new VideoImport(path, logReader, goProRect, 0), 100);
+            newState.hasImageSource = true;
+            cout << "Adding video source..." << endl;
+        }
+
         if (vm.count("output")) {
             outputDir = vm["output"].as<string>();
         }
 
         if (vm.count("intermediate")) {
             intermediate = true;
+        }
+
+        if (vm.count("videofeed")) {
+            videoFeed = true;
         }
         handle_state_change(newState);
     }
