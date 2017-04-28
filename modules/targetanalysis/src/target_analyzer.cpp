@@ -19,6 +19,7 @@
 #include "object_list.h"
 #include "target_analyzer.h"
 #include "target.h"
+#include "settings.h"
 
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>

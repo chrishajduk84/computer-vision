@@ -20,6 +20,7 @@
 #include "pixel_object_list.h"
 #include "target_analyzer.h"
 #include "contour_comparison.h"
+#include "settings.h"
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/core.hpp>
@@ -32,6 +33,7 @@ using namespace boost;
 using namespace std;
 using namespace cv;
 
+TargetAnalyzerSettings settings = Settings::getInstance()->get_settings().ta;
 
 PixelObjectList* PixelObjectList::firstInstance = NULL;
 
@@ -79,7 +81,7 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
         
     double gps = compareGPS(po1, o2);
 BOOST_LOG_TRIVIAL(info) << "GPS comparison: " << gps;
-    if (gps > GPS_THRESHOLD){
+    if (gps > settings.GPS_THRESHOLD){
         double visual = compareContours(po1, o2);
         if (visual > VISUAL_THRESHOLD){
             //double colour = compareColour(po1, o2);
