@@ -31,11 +31,9 @@ TargetAnalyzer* TargetAnalyzer::analyzer = NULL;
 vector<Object*> mostRecentObjectList;
 
 void TargetAnalyzer::analyze_pixelobject(PixelObject* po){
-    
     PixelObjectList* pol = PixelObjectList::getInstance();
     pol->addAndCompare(po);
     BOOST_LOG_TRIVIAL(trace) << "End of Analysis";
-
 }
 
 
@@ -50,20 +48,82 @@ int TargetAnalyzer::get_unique_objects_length(){
     return pol->getListLength();
 }
 
+double TargetAnalyzer::get_threshold(AlgorithmNum an){
+    return THRESHOLD[an];
+}
+
+double TargetAnalyzer::get_threshold_bias(AlgorithmNum an){
+    return THRESHOLD_BIAS[an];
+}
+
+void TargetAnalyzer::set_threshold(AlgorithmNum an, double value){
+    THRESHOLD[an] = value;
+}
+
+void TargetAnalyzer::set_threshold_bias(AlgorithmNum an, double value){
+    THRESHOLD_BIAS[an] = value;
+}
+
+
 //Based on the GPS location of the image, calculates the
 //GPS location of a certain pixel in the image.
-void TargetAnalyzer::getGPSCentroid(cv::Point2d point){
+int TargetAnalyzer::getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
+Frame* f, cv::Point2d* returnResult){
+    const Metadata* m = f->get_metadata();
+    cv::Mat img = f->get_img();
+    int h = img.cols;
+    int w = img.rows;
+    
+    if (w <= 0 || h <= 0){ 
+        return 0;
+    }
 
-//Gets the GPS location of each corner of the image based on the center GPS
-//coordinate acquired by the GPS
-// cameraAlpha is in degrees
+    cv::Point2d imgCenter(w/2, h/2);
+    
+    //(0,0) is in the center of the image
+    cv::Point2d biasedPoint = point - imgCenter;
+
+    double altitude = m->altitude;
+    double heading = m->heading;
+    double latitude = m->lat;
+    double longitude = m->lon;
+
+    //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
+    double cameraXEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.x)); //meters from center of photo to edge
+    double cameraYEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.y)); //meters from center of photo to edge
+
+    //Rotation Matrix - Heading
+    //Note: The '-heading' compensates for the fact that directional heading is
+    //a clockwise quantity, but cos(theta) assumes theta is a counterclockwise
+    //quantity.
+    double realXEdge = cos(DEG2RAD(-heading)) * cameraXEdge - sin(DEG2RAD(-heading)) *
+    cameraYEdge;
+    double realYEdge = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
+    cameraYEdge;
+
+    double realX = cos(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge - sin(DEG2RAD(-heading)) *
+    biasedPoint.y/(h/2)*cameraYEdge;
+    double realY = sin(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge + cos(DEG2RAD(-heading)) *
+    biasedPoint.y/(h/2)*cameraYEdge;
+   
+    double lon = RAD2DEG(realX/EARTH_RADIUS)/cos(DEG2RAD(latitude)) + longitude;
+    double lat = RAD2DEG(realY/EARTH_RADIUS) + latitude;
+
+    double unitX = realXEdge/img.cols;
+    double unitY = realYEdge/img.rows;
+
+    f->set_pixel_distance(unitX,unitY);    
+    *returnResult = cv::Point2d(lat,lon);
+    return 1;
+}
+
+
+
 //TODO: The image data fed into this function should have the camera distortion
 //corrected for.
 //TODO: Add compensation for roll and pitch angles. This should skew the
 //photo/gps grid. The lens profile may have a big effect here. See previous
 //todo.
-
-}
 
 double TargetAnalyzer::getGPSDistance(double lat1, double lon1, double lat2, double lon2){
     double dLat = DEG2RAD(lat2 - lat1);

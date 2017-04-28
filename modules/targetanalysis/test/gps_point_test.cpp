@@ -91,7 +91,8 @@ BOOST_AUTO_TEST_CASE(GPSHighAltitudePointTest){
                 //Skip first zero row
                 mi->next_metadata();
                 const Metadata m = mi->get_metadata(220649);
-                Frame* f = new Frame(img, current_file, m);
+                Camera cam = Camera::TestCamera();
+                Frame* f = new Frame(img, current_file, m, cam);
                 
                 longitude = m.lon;
                 latitude = m.lat;
@@ -125,9 +126,8 @@ BOOST_AUTO_TEST_CASE(GPSHighAltitudePointTest){
     for (int i = 0; i < numPixelObjects; i++){
         BOOST_LOG_TRIVIAL(trace) << "Processing PixelObject: " << i;
         geoLocation[i] = new cv::Point2d();
-        BOOST_CHECK(po->getGPS(pointerList[i]->get_centroid(),cameraAlpha,pointerList[i]->get_image(),geoLocation[i])==1); 
-         
         TargetAnalyzer* ta = TargetAnalyzer::getInstance();
+        BOOST_CHECK(ta->getGPS(pointerList[i]->get_centroid(),cameraAlpha,pointerList[i]->get_image(),geoLocation[i])==1);   
         double gpsDistance = ta->getGPSDistance(latitude, longitude,
         geoLocation[i]->x, geoLocation[i]->y);
  
@@ -190,7 +190,8 @@ BOOST_AUTO_TEST_CASE(GPSLowAltitudePointTest){
                 //Skip first zero row
                 mi->next_metadata();
                 const Metadata m = mi->next_metadata();
-                Frame* f = new Frame(img, current_file, m);
+                Camera cam = Camera::TestCamera();
+                Frame* f = new Frame(img, current_file, m, cam);
                 
                 longitude = m.lon;
                 latitude = m.lat;
@@ -230,12 +231,11 @@ BOOST_AUTO_TEST_CASE(GPSLowAltitudePointTest){
     for (int i = 0; i < numPixelObjects; i++){
         BOOST_LOG_TRIVIAL(trace) << "Processing PixelObject: " << i;
         geoLocation[i] = new cv::Point2d();
-        BOOST_CHECK(po->getGPS(pointerList[i]->get_centroid(),cameraAlpha,pointerList[i]->get_image(),geoLocation[i])==1); 
+        TargetAnalyzer* ta = TargetAnalyzer::getInstance();
+        BOOST_CHECK(ta->getGPS(pointerList[i]->get_centroid(),cameraAlpha,pointerList[i]->get_image(),geoLocation[i])==1); 
             
         double dLat = abs(latitude - geoLocation[i]->x);
         double dLon = abs(longitude - geoLocation[i]->y);
-        
-        TargetAnalyzer* ta = TargetAnalyzer::getInstance();
         double gpsDistance = ta->getGPSDistance(latitude, longitude,
         geoLocation[i]->x, geoLocation[i]->y);
 

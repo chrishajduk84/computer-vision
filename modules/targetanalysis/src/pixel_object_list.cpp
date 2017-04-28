@@ -56,7 +56,6 @@ void PixelObjectList::addNode(PixelObject* po){
     newNode->o = newObject;
         
     newNode->o->add_pobject(po);
-    newNode->o->update();
     newNode->next = 0; //Nullify pointer (Since there is no next list item)
 
     //Update old node with the new node
@@ -78,95 +77,100 @@ double PixelObjectList::compareNode(PixelObject* po1, Object* o2){
     //Compare Pixel Objects based on Metadata and visual queues
     //Uses Hierarchical Structure: GPS data is most important, followed by
     //Contour/Shape, followed by Colour
-        
+    TargetAnalyzer* ta = TargetAnalyzer::getInstance();
+    using TA = TargetAnalyzer; 
     double gps = compareGPS(po1, o2);
-BOOST_LOG_TRIVIAL(info) << "GPS comparison: " << gps;
-    if (gps > settings.GPS_THRESHOLD){
+
+    if (gps > settings.GPS_THRESHOLD){//    if (gps > ta->get_threshold(TA::GPS)){
         double visual = compareContours(po1, o2);
-        if (visual > VISUAL_THRESHOLD){
-            //double colour = compareColour(po1, o2);
-            //if (colour > COLOUR_THRESHOLD){
-            //  return gps*visual*colour;
-            //}
-            return (gps + GPS_THRESHOLD_BIAS)*(visual + VISUAL_THRESHOLD_BIAS); //Temporary return statement while I get all the other algorithms working
+        if (visual > ta->get_threshold(TA::CONTOUR)){
+            double colour = compareColour(po1, o2);
+            if (colour > ta->get_threshold(TA::COLOUR)){
+                return (gps + ta->get_threshold_bias(TA::GPS))*(visual + ta->get_threshold_bias(TA::CONTOUR))*(colour + ta->get_threshold_bias(TA::COLOUR)); 
+            }
         }
     }
     return 0;
+}
+
+double PixelObjectList::compareColour(PixelObject* po1, Object* o2){
+    cv::Scalar a = po1->get_colour();
+    cv::Scalar b = o2->get_colour();
+    double* aArr = a.val;
+    double* bArr = b.val;
+
+    double euclideanDistance = sqrt(pow(aArr[0] - bArr[0],2) + pow(aArr[1] -
+    bArr[1],2) + pow(aArr[2] - bArr[2],2));
+
+    return 1 - euclideanDistance/sqrt(3*pow(255,2));
 }
 
 double PixelObjectList::compareGPS(PixelObject* po1, Object* o2){
     //Calculations assume ideal scenario (no tilt in photos, no distortion)
     Frame* f = po1->get_image();
     cv::Point2d result(0,0);
-    if(!getGPS(po1->get_centroid(),cv::Point2d(69.5/2,125.3/2)/*getSettings()*/,f,&result)){
+    if(!TargetAnalyzer::getInstance()->getGPS(po1->get_centroid(),cv::Point2d(69.5/2,125.3/2)/*getSettings()*/,f,&result)){
         //If there is something wrong with the GPS coordinates, its not a valid
         //match
         return 0;
     }
     po1->set_gps_centroid(result);
-    BOOST_LOG_TRIVIAL(debug) << result;
-    BOOST_LOG_TRIVIAL(debug) << o2->get_centroid();
     double distance = TargetAnalyzer::getInstance()->getGPSDistance(result, o2->get_centroid());
-    BOOST_LOG_TRIVIAL(debug) << distance;
     if (distance < 1){
         distance = 1; //Prevent zero division
     }
     return 1.0/distance; //As you get farther away, probability of the target being the same decreases.       
 }
 
-int PixelObjectList::getGPS(cv::Point2d point, cv::Point2d cameraAlpha,
-Frame* f, cv::Point2d* returnResult){
-    const Metadata* m = f->get_metadata();
-    cv::Mat img = f->get_img();
-    int h = img.cols;
-    int w = img.rows;
+
+double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
+    //Compare width to length ratio, compare area to perimeter ratio, compare
+    //square area(widthxlength) to area.
+    double maxDiff = sqrt(5);
     
-    if (w <= 0 || h <= 0){ 
-        return 0;
+    vector<cv::Point> contour1 = po1->get_contour();
+    //Length is the larger dimension
+    cv::Rect r1 = cv::boundingRect(contour1);
+    double l1 = r1.height;
+    double w1 = r1.width;
+    //If length is not the larger dimension, switch the values
+    if (l1 < w1){
+        double temp = l1;
+        l1 = w1;
+        w1 = temp;
     }
+    double w_l_ratio1 = w1/l1;
+    double a_p_ratio1 = po1->get_area()/po1->get_perimeter();
+    double sq_a_ratio1 = po1->get_area()/(l1*w1);
 
-    cv::Point2d imgCenter(w/2, h/2);
-    
-    //(0,0) is in the center of the image
-    cv::Point2d biasedPoint = point - imgCenter;
+    for (PixelObject* po2 : o2->get_pobjects()){
+        vector<cv::Point> contour2 = po2->get_contour();
 
-    double altitude = m->altitude;
-    double heading = m->heading;
-    double latitude = m->lat;
-    double longitude = m->lon;
+        cv::Rect r2 = cv::boundingRect(contour2);
+        double l2 = r2.height;
+        double w2 = r2.width;
+        if (l2 < w2){
+            double temp = l2;
+            l2 = w2;
+            w2 = temp;
+        } 
+        double w_l_ratio2 = w2/l2;
+        double a_p_ratio2 = po2->get_area()/po2->get_perimeter();
+        double sq_a_ratio2 = po2->get_area()/(l2*w2);
 
-    //Note: The cameraAlpha value represents the half angle of the x and y//direction of the image.
-    double cameraXEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.x)); //meters from center of photo to edge
-    double cameraYEdge = altitude / tan(DEG2RAD(90 - cameraAlpha.y)); //meters from center of photo to edge
+        double diff = sqrt(pow((l1 - l2)/l1, 2) + pow((w1 - w2)/w2,2) +
+        pow((w_l_ratio1 - w_l_ratio2)/w_l_ratio1,2) + pow((a_p_ratio1 -
+        a_p_ratio2)/a_p_ratio1,2) + pow((sq_a_ratio1 -
+        sq_a_ratio2)/sq_a_ratio1,2)); //5-dimensions -> Max value is sqrt(5)
 
-    //Rotation Matrix - Heading
-    //Note: The '-heading' compensates for the fact that directional heading is
-    //a clockwise quantity, but cos(theta) assumes theta is a counterclockwise
-    //quantity.
-    double realXEdge = cos(DEG2RAD(-heading)) * cameraXEdge - sin(DEG2RAD(-heading)) *
-    cameraYEdge;
-    double realYEdge = sin(DEG2RAD(-heading)) * cameraXEdge + cos(DEG2RAD(-heading)) *
-    cameraYEdge;
-
-    double realX = cos(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge - sin(DEG2RAD(-heading)) *
-    biasedPoint.y/(h/2)*cameraYEdge;
-    double realY = sin(DEG2RAD(-heading)) * biasedPoint.x/(w/2)*cameraXEdge + cos(DEG2RAD(-heading)) *
-    biasedPoint.y/(h/2)*cameraYEdge;
-   
-    double lon = RAD2DEG(realX/EARTH_RADIUS)/cos(DEG2RAD(latitude)) + longitude;
-    double lat = RAD2DEG(realY/EARTH_RADIUS) + latitude;
-
-    double unitX = realXEdge/img.cols;
-    double unitY = realYEdge/img.rows;
-
-    f->set_pixel_distance(unitX,unitY);    
-    *returnResult = cv::Point2d(lat,lon);
-    return 1;
+        if (diff < maxDiff){
+            maxDiff = diff;
+        }
+    }
+    return 1 - maxDiff/sqrt(5);
 }
 
-
-//TODO: ADD OPTION TO ONLY LOOK AT PREDEFINED SHAPES
-double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
+/*double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
     const vector<PixelObject*>& poList = o2->get_pobjects();
         
     double maxSimilarity = 0;
@@ -204,7 +208,7 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
         for (int interval = 0; interval < numIntervals; interval++){
             double theta = 2*M_PI/numIntervals * interval;
             BOOST_LOG_TRIVIAL(debug) << "theta: " << theta << ", aS2: " <<
-            areaScale2 << ", C2: " << c2 << endl;
+            areaScale2 << ", C2: " << c2;
 
             vector<cv::Point> tempVec;
             for (Point i : v2){
@@ -214,8 +218,6 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
             }    
             v2Mod.push_back(tempVec);
         }
-            
-        BOOST_LOG_TRIVIAL(debug) << v2Mod[0];
             
         float radius1, radius2;
         Point2f center1, center2;
@@ -248,7 +250,7 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
                     maxSimilarity = sim;
                     minimumContour = v2Mod[i];
                         
-                   /*//Visualization
+                  */ /*Visualization
                     if (sim > 0.7){
                         Mat drawing = Mat::zeros(matReference.x*2, matReference.y*2, CV_8UC3);
 
@@ -258,13 +260,13 @@ double PixelObjectList::compareContours(PixelObject* po1, Object* o2){
                         namedWindow( "Duplicate Contours", CV_WINDOW_AUTOSIZE );
                         imshow( "Duplicate Contours", drawing );
                         waitKey(0);
-                    }*/   
+                    }*//*   
                 }
             }
         }
     } 
     return maxSimilarity;
-}
+}*/
 
 void PixelObjectList::addAndCompare(PixelObject* po){
     //Iterate over list
@@ -291,14 +293,11 @@ void PixelObjectList::addAndCompare(PixelObject* po){
         tempPointer = tempPointer->next;
     }
     //Is the best match good enough - FUZZY LOGIC
-    //TODO: This should be a configurable value via a socket connection or a
-    //learning algorithm
-    if (maxSimilarity >= MATCH_THRESHOLD){
+    if (maxSimilarity >= TargetAnalyzer::getInstance()->get_threshold(TargetAnalyzer::MATCH)){
         //The add_pobject function should also recalculate all parameters of the
         //object.
         listMatch[iMax].node->o->add_pobject(po);
-        listMatch[iMax].node->o->update();
-   }
+    }
     else{
         //Add the node to the end of the list for future comparisons
         //Note, that objects that have already matched are not included for

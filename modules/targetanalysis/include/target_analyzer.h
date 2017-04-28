@@ -61,7 +61,38 @@ class TargetAnalyzer {
      * Private constructor due to singleton design pattern.
      */ 
     TargetAnalyzer(){};
-      
+
+    /*
+     * Settings variables for threshold and threshold biasing in the
+     * grouping algorithm
+     *
+     * VISUAL_THRESHOLD determines how similar two contours need to be inorder
+     * to be designated a 'duplicate'.
+     *
+     * GPS_THRESHOLD determines how similar two GPS coordinates must be inorder
+     * to be designated a 'duplicate'. A value of 0.1 coorresponds to 10 meter
+     * accuracy (1/0.1 = 10m)
+     *
+     * COLOUR_THRESHOLD determines how similar two pixel object colours must be inorder
+     * to be designated a 'duplicate'. This is based on a relative RGB scale,
+     * where White and Black are the polar opposites and would be designated a 0
+     * (based on a euclidean RGB distance).
+     *
+     * GPS_THRESHOLD_BIAS determines how important GPS similarity is in
+     * comparison to VISUAL and COLOR parameters. This value is applied AFTER it matches
+     * the original GPS_THRESHOLD.
+     *   
+     * VISUAL_THRESHOLD_BIAS determines how important GPS similarity is in
+     * comparison to GPS and COLOR parameters. This value is applied AFTER it matches
+     * the original VISUAL_THRESHOLD.
+     *
+     * COLOUR_THRESHOLD_BIAS determines how important colour similarity is in
+     * comparison to GPS and visual/physical parameters. This value is applied AFTER it matches
+     * the original COLOUR_THRESHOLD.
+     */
+    double THRESHOLD[4] = {0.1,0.6,0.9,0.5}; double THRESHOLD_BIAS[4] =
+    {0.5,0.1,0,0};
+
     public:
         /*
          * getInstance() returns the singleton instance of this class. If it is not
@@ -74,55 +105,17 @@ class TargetAnalyzer {
             }
             return analyzer;
         }
-    
-        /**
-         * @brief Analyzes a pixeltarget and returns a pointer to the unique target 
-         *        it belongs to
-         *
-         * @param p PixelTarget to be analyzed
-         * @param f Frame that the PixelTarget belongs to
-         * @return pointer to the Target that the PixelTarget belongs to
+   
+        /*
+         * @brief AlgorithmNum enumerates a variety of settings for determining
+         * the variance and significance of GPS, CONTOUR and COLOUR correlation.
          */
-  //      void analyze_targets_in_frame(PixelObject * p, Frame * f);
-        //This will eventually need to be:
-        //Target * analyze_targets_in_frame(PixelTarget?, Frame?...)
-
-        /**
-         * @brief retrieves a vector containing all of the unique Targets that 
-         *        have been indentified. 
-         *        The caller of the function should not delete the Targets as they
-         *        will be deleted by the TargetAnalyzer destructor
-         *        
-         * @return vector containing the unique Targets which have been analyzed
-         */
-        //vector<Target *> get_processed();
-        
-        /**
-         * @brief   Determines the longitude and latitude of the corners of the
-         *          image, assuming the geolocation provided in the telemetry is the
-         *          centroid of the photo. This function takes into account
-         *          possible rotations of the photo from the heading of the
-         *          aircraft.
-         *          
-         * @param   cameraAlpha Alpha_X and Alpha_Y values for the horizontal and vertical
-         *          values for the camera viewing (half-)angle. Measured from
-         *          the center of the photo to the outer most edge of the camera
-         *          image.
-         * @param   longitude The GPS longitude of the aircraft when the photo was
-         *          taken.
-         * @param   latitude The GPS latitude of the aircraft when the photo was
-         *          taken.
-         * @param   altitude The altitude of the aircraft from where it took the
-         *          photo.
-         * @param   heading The heading (GPS heading, not magnetic heading) from
-         *          where the aircraft took the photo.
-         * @param   img The image data for which the GPS coordinates are
-         *          calculated for. 
-         *        
-         * @return  vector containing the unique Targets which have been analyzed
-         */
-        void getGPSCorners(cv::Point2d cameraAlpha, double longitude, double latitude,
-double altitude, double heading, cv::Mat* img, Object* o);
+        enum AlgorithmNum{
+            GPS = 0,
+            CONTOUR = 1,
+            COLOUR = 2,
+            MATCH = 3,
+        };
 
         /*
          * analyze_pixelobject(PixelObject* po) is the entry function into this
@@ -133,13 +126,55 @@ double altitude, double heading, cv::Mat* img, Object* o);
         void analyze_pixelobject(PixelObject* po);
 
         /*
-         * A function which based on any point in an image, provides the GPS
-         * coordinates of that point.
-         * -> THIS FUNCTION IS STILL WIP AND WILL BE FULLY DEVELOPED IN A
-         * SEPERATE PR
+         * @brief get_threshold() is a getter for the threshold parameter of a
+         * particular analysis algorithm
+         * @param an the algorithm for which the threshold settings are
+         * requested for, as defined by enum AlgorithmNum
+         * @return the threshold setting for the particular algorithm
          */
-        void getGPSCentroid(cv::Point2d point);
+        double get_threshold(AlgorithmNum an);
+       
+        /*
+         * @brief get_threshold_bias() is a getter for the threshold_bias
+         * parameter of a particular analysis algorithm.
+         * @param an the algorithm for which the threshold_bias settings are
+         * requested for, as defined by enum AlgorithmNum
+         * @return the threshold_bias setting for the particular algorithm
+         */
+        double get_threshold_bias(AlgorithmNum an); 
         
+        /*
+         * @brief set_threshold() is a setter for the threshold parameter of a
+         * particular analysis algorithm
+         * @param an the algorithm for which the threshold settings are
+         * requested for, as defined by enum AlgorithmNum
+         * @param value the threshold setting for the particular algorithm
+         */
+        void set_threshold(AlgorithmNum an, double value);
+       
+        /*
+         * @brief set_threshold_bias() is a getter for the threshold_bias
+         * parameter of a particular analysis algorithm.
+         * @param an the algorithm for which the threshold_bias settings are
+         * requested for, as defined by enum AlgorithmNum
+         * @param value the threshold_bias setting for the particular algorithm
+         */
+        void set_threshold_bias(AlgorithmNum an, double value); 
+        /*
+         * getGPS(...) calculates the GPS coordinates (latitude, longitude) of a
+         * specific point in a frame.
+         * @param point the point at which the latitude and longitude should be
+         * determined at.
+         * @param cameraAlpha the alpha angle of the lens of the camera. This
+         * defines how much can be seen and what effect altitude has on the image
+         * scaling.
+         * @param f the frame for which the point is calculated for.
+         * @return A Point, where the first value is the latitude and the second is
+         * the longitude.
+         */
+        int getGPS(cv::Point2d point, cv::Point2d cameraAlpha,Frame* f, cv::Point2d* returnResult);
+
+
         /*
          * @brief getGPSDistance() calculates the distance between two GPS coordinates in meters.
          * @param lat1 the latitude of the first point
